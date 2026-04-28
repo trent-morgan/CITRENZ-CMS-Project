@@ -71,20 +71,18 @@ const styles = {
     color: '#1A202C',
   },
   content: {
-    // This provides padding so text isn't touching the screen edge, 
-    // but the background colors behind it will still be full-width.
     padding: '60px 5%', 
     width: '100%',
     boxSizing: 'border-box',
   },
   heroSection: {
     width: '100%',
-    backgroundColor: '#F7FAFC', // Light cool gray
+    backgroundColor: '#F7FAFC', 
     borderBottom: '1px solid #E2E8F0',
     textAlign: 'center',
   },
   title: {
-    fontSize: 'clamp(2rem, 5vw, 3.5rem)', // Responsive font size
+    fontSize: 'clamp(2rem, 5vw, 3.5rem)', 
     margin: '0 0 10px 0',
     fontWeight: '800',
     color: '#2D3748',

@@ -1,24 +1,37 @@
 import React from 'react';
-import logoImg from './assets/logo.png'; 
+import { Link } from 'react-router-dom'; // Import Link
+import logoImg from './assets/logo.png';
+import profileImg from './assets/profile_icon.png'; 
 
 const Navbar = () => {
   return (
     <nav style={styles.navbar}>
       <div style={styles.logoContainer}>
-        <img src={logoImg} alt="CITRENZ Logo" style={styles.logoImage} />
-        </div>
+        {/* Linking the logo back to home is a standard UX practice */}
+        <Link to="/">
+          <img src={logoImg} alt="CITRENZ Logo" style={styles.logoImage} />
+        </Link>
+      </div>
+
       <ul style={styles.navLinks}>
-        <li style={styles.link}>Home</li>
-        <li style={styles.link}>Submissions</li>
-        <li style={styles.link}>Reviews</li>
-        <li style={styles.link}>Profile</li>
+        <li style={styles.link}>Services</li>
+        {/* This is the updated link to your new page */}
+        <li style={styles.link}>
+          <Link to="/conferences" style={styles.cleanLink}>Conferences</Link>
+        </li>
+        <li style={styles.link}>Contact</li>
+        <li style={styles.link}>About Us</li>
       </ul>
-      <button style={styles.loginBtn}>Login</button>
+
+      <div style={styles.profileContainer}>
+        <img src={profileImg} alt="Profile Icon" style={styles.profileImage} />
+      </div>
     </nav>
   );
 };
 
 const styles = {
+  // ... your existing styles ...
   navbar: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -31,16 +44,10 @@ const styles = {
     top: 0,
     zIndex: 1000,
   },
-  logo: {
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
-    color: '#2D3748',
-    letterSpacing: '-0.5px'
-  },
   navLinks: {
     display: 'flex',
     listStyle: 'none',
-    gap: '30px',
+    gap: '50px',
     margin: 0,
     padding: 0,
   },
@@ -48,27 +55,17 @@ const styles = {
     fontSize: '0.95rem',
     color: '#4A5568',
     cursor: 'pointer',
-    fontWeight: '500',
+    fontWeight: '600',
   },
-  loginBtn: {
-    backgroundColor: '#3182CE',
-    color: 'white',
-    border: 'none',
-    padding: '8px 18px',
-    borderRadius: '6px',
-    fontWeight: 'bold',
-    cursor: 'pointer'
+  // Add this to remove the default blue underline from the Link component
+  cleanLink: {
+    textDecoration: 'none',
+    color: 'inherit', 
   },
-  logoContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    height: '100%', // Ensures it centers vertically in the nav
-  },
-  logoImage: {
-    height: '40px', // Adjust this to make your logo bigger or smaller
-    width: 'auto',   // Maintains the aspect ratio
-    display: 'block'
-  }
+  logoContainer: { display: 'flex', alignItems: 'center', height: '100%' },
+  logoImage: { height: '35px', width: 'auto', display: 'block' },
+  profileContainer: { display: 'flex', alignItems: 'center', height: '100%' },
+  profileImage: { height: '40px', width: 'auto', display: 'block' }
 };
 
 export default Navbar;

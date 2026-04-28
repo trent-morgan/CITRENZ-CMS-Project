@@ -1,0 +1,33 @@
+import { useState, useEffect } from 'react';
+import { getConferences } from './conferenceService';
+
+export const useConferences = () => {
+  const [conferences, setConferences] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await getConferences();
+        setConferences(data);
+      } catch (err) {
+        console.error("Database error:", err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  const filteredConferences = conferences.filter(conf =>
+    conf.title?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return { 
+    searchTerm, 
+    setSearchTerm, 
+    conferences: filteredConferences, 
+    loading 
+  };
+};
