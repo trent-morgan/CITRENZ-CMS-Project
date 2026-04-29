@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
-const MOCK_CONFERENCES = [
-  { id: 1, title: 'CITRENZ Annual Conference 2026', location: 'Christchurch', date: 'Oct 12-14, 2026', status: 'Open' },
-  { id: 2, title: 'North Island IT Educators Workshop', location: 'Auckland', date: 'Nov 05, 2026', status: 'Open' },
-  { id: 3, title: 'South Island Computing Symposium', location: 'Dunedin', date: 'Dec 01, 2026', status: 'Open' }
-];
+// const MOCK_CONFERENCES = [
+//   { id: 1, title: 'CITRENZ Annual Conference 2026', location: 'Christchurch', date: 'Oct 12-14, 2026', status: 'Open' },
+//   { id: 2, title: 'North Island IT Educators Workshop', location: 'Auckland', date: 'Nov 05, 2026', status: 'Open' },
+//   { id: 3, title: 'South Island Computing Symposium', location: 'Dunedin', date: 'Dec 01, 2026', status: 'Open' }
+// ];
 
-const ConferencesPage = () => {
+const Login = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const loading = false;
 
@@ -21,40 +21,6 @@ const ConferencesPage = () => {
       <h1 style={styles.mainTitle}>Conferences</h1>
 
       <div style={styles.mainContainer}>
-        {/* LEFT SIDE: Sidebar (20%) */}
-        <aside style={styles.sidebar}>
-          <p className="info">Create a new conference</p>
-          <button style={styles.sidebarButton}>Create Conference</button>
-          
-          <div style={styles.filterGroup}>
-            <label style={styles.label}>Search</label>
-            <div style={styles.border}>
-              <input 
-              type="text" 
-              placeholder="Type to search..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={styles.searchInput}
-              />
-            </div>
-          </div>
-
-          <div style={styles.filterGroup}>
-            <label style={styles.label}>Filters</label>
-            <div style={styles.border}>
-              <select style={styles.select}>
-              <option>All Locations</option>
-              <option>Christchurch</option>
-              <option>Auckland</option>
-              <option>Wellington</option>
-              <option>Duniden</option>
-              <option>Queenstown</option>
-            </select>
-            </div>
-          </div>
-        </aside>
-
-        {/* RIGHT SIDE: Content (80%) */}
         <main style={styles.contentArea}>
           <header style={styles.header}>
             <h2 style={styles.title}>Available Conferences</h2>
@@ -241,4 +207,4 @@ const styles = {
   }
 };
 
-export default ConferencesPage;
+export default Login;
