@@ -110,6 +110,10 @@ code {
   background: var(--code-bg);
 }
 
+.info {
+  font-size: 0.8rem;
+  font-style: italic;
+}
 .nav-gradient-btn {
   text-decoration: none;
   font-weight: 600;

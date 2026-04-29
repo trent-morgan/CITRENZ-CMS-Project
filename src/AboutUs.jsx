@@ -69,11 +69,11 @@ const AboutUs = () => {
     cardGrid: {
       display: 'grid',
       gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-      gap: '40px',
+      gap: '30px',
     },
     card: {
-      padding: '50px 40px',
-      borderRadius: '16px',
+      padding: '40px 30px',
+      borderRadius: '14px',
       border: '1px solid #F7FAFC',
       backgroundColor: '#fff',
       boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)',
