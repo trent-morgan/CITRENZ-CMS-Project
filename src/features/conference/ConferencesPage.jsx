@@ -4,7 +4,6 @@ import { useConferences } from './useConferences';
 const ConferencesPage = () => {
   const { searchTerm, setSearchTerm, conferences, loading } = useConferences();
 
-  // Handle the loading state from Supabase
   if (loading) {
     return (
       <div style={{ ...styles.wrapper, textAlign: 'center', padding: '100px' }}>
@@ -15,7 +14,6 @@ const ConferencesPage = () => {
 
   return (
     <div style={styles.wrapper}>
-      {/* Hero Section */}
       <header style={styles.heroSection}>
         <div style={styles.content}>
           <h1 style={styles.title}>Available Conferences</h1>
@@ -31,7 +29,6 @@ const ConferencesPage = () => {
         </div>
       </header>
 
-      {/* Conference List Section */}
       <section style={styles.actionSection}>
         <div style={styles.content}>
           <div style={styles.cardGrid}>
@@ -58,7 +55,6 @@ const ConferencesPage = () => {
   );
 };
 
-// ... keep your existing styles object exactly the same ...
-const styles = { /* your styles here */ };
+const styles = { /* styles here */ };
 
 export default ConferencesPage;

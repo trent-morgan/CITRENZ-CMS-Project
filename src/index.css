@@ -109,3 +109,20 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+.nav-gradient-btn {
+  text-decoration: none;
+  font-weight: 600;
+  color: white;
+  padding: 10px 22px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #3182CE 0%, #2C5282 100%);
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.nav-gradient-btn:hover {
+  background: linear-gradient(135deg, #2C5282 0%, #3182CE 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(49, 130, 206, 0.4);
+}

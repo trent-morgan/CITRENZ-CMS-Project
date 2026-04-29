@@ -1,4 +1,5 @@
 import React from 'react';
+import heroBG from './assets/it_conference.jpg';
 
 const Home = () => {
   const conferenceDetails = {
@@ -9,7 +10,6 @@ const Home = () => {
 
   return (
     <div style={styles.wrapper}>
-      {/* Hero Section - Full Width Background */}
       <header style={styles.heroSection}>
         <div style={styles.content}>
           <h1 style={styles.title}>{conferenceDetails.title}</h1>
@@ -20,7 +20,6 @@ const Home = () => {
         </div>
       </header>
 
-      {/* Action Section - Alternating Background */}
       <section style={styles.actionSection}>
         <div style={styles.content}>
           <h2 style={styles.sectionHeading}>Portal Access</h2>
@@ -45,19 +44,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Timeline Section - Light Gray Full Width */}
-      <footer style={styles.footerSection}>
-        <div style={styles.content}>
-          <h4 style={{ marginBottom: '20px' }}>Critical Milestones</h4>
-          <div style={styles.timelineGrid}>
-            <div><strong>June 01</strong><br />Call for Papers Open</div>
-            <div><strong>Oct 15</strong><br />Submission Deadline</div>
-            <div><strong>Nov 20</strong><br />Author Notification</div>
-            <div><strong>Dec 05</strong><br />Camera Ready Due</div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };
@@ -71,46 +57,56 @@ const styles = {
     color: '#1A202C',
   },
   content: {
-    padding: '60px 5%', 
+    padding: '60px 5%',
     width: '100%',
     boxSizing: 'border-box',
+    maxWidth: '1200px',
+    margin: '0 auto',
   },
   heroSection: {
     width: '100%',
-    backgroundColor: '#F7FAFC', 
+    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)), url(${heroBG})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
     borderBottom: '1px solid #E2E8F0',
     textAlign: 'center',
+    padding: '30px 0', 
   },
   title: {
-    fontSize: 'clamp(2rem, 5vw, 3.5rem)', 
+    fontSize: 'clamp(2rem, 5vw, 3.5rem)',
     margin: '0 0 10px 0',
-    fontWeight: '800',
-    color: '#2D3748',
+    fontWeight: '900',
+    color: '#ffffff',
+    lineHeight: '1.2',
   },
   subtitle: {
     fontSize: '1.2rem',
-    color: '#718096',
+    color: '#f0f0f0',
     maxWidth: '800px',
     margin: '0 auto',
   },
   badge: {
     display: 'inline-block',
-    backgroundColor: '#2D3748',
+    backgroundColor: '#3182CE',
     color: 'white',
     padding: '10px 20px',
     borderRadius: '4px',
     marginTop: '30px',
     fontSize: '0.9rem',
     fontWeight: '600',
+    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
   },
   actionSection: {
     width: '100%',
     backgroundColor: '#ffffff',
+    paddingBottom: '80px',
   },
   sectionHeading: {
     textAlign: 'center',
-    marginBottom: '40px',
-    fontSize: '1.8rem',
+    marginBottom: '50px',
+    fontSize: '2.2rem',
+    fontWeight: '700',
   },
   cardGrid: {
     display: 'grid',
@@ -119,10 +115,11 @@ const styles = {
   },
   card: {
     padding: '40px',
-    borderRadius: '8px',
+    borderRadius: '12px',
     border: '1px solid #E2E8F0',
-    transition: 'transform 0.2s ease',
     backgroundColor: '#fff',
+    boxShadow: '0 4px 10px rgba(0,0,0,0.05)',
+    textAlign: 'center',
   },
   primaryButton: {
     width: '100%',
@@ -130,7 +127,7 @@ const styles = {
     backgroundColor: '#3182CE',
     color: 'white',
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: '6px',
     cursor: 'pointer',
     fontWeight: '600',
     marginTop: '20px',
@@ -138,10 +135,10 @@ const styles = {
   secondaryButton: {
     width: '100%',
     padding: '12px',
-    backgroundColor: '#E2E8F0',
+    backgroundColor: '#EDF2F7',
     color: '#2D3748',
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: '6px',
     cursor: 'pointer',
     fontWeight: '600',
     marginTop: '20px',
@@ -152,22 +149,10 @@ const styles = {
     backgroundColor: '#1A202C',
     color: 'white',
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: '6px',
     cursor: 'pointer',
     fontWeight: '600',
     marginTop: '20px',
-  },
-  footerSection: {
-    width: '100%',
-    backgroundColor: '#F7FAFC',
-    borderTop: '1px solid #E2E8F0',
-  },
-  timelineGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-    gap: '20px',
-    fontSize: '0.9rem',
-    color: '#4A5568',
   }
 };
 
