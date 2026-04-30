@@ -19,7 +19,7 @@ const AboutUs = () => {
       backgroundRepeat: 'no-repeat',
       borderBottom: '1px solid #E2E8F0',
       textAlign: 'center',
-      padding: '120px 0', 
+      padding: '10px 0', 
     },
     content: {
       padding: '80px 10%',
@@ -54,35 +54,28 @@ const AboutUs = () => {
       margin: '0 auto',
       lineHeight: '1.6',
     },
-    actionSection: {
+    aboutSection: {
       width: '100%',
       backgroundColor: '#ffffff',
       paddingBottom: '100px',
     },
     sectionHeading: {
       textAlign: 'center',
-      marginBottom: '60px',
+      marginBottom: '40px',
       fontSize: '2.25rem',
       fontWeight: '700',
       color: '#2D3748',
     },
-    cardGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-      gap: '30px',
+    textContainer: {
+      maxWidth: '800px', // Prevents lines from being too long and hard to read
+      margin: '0 auto',
+      fontSize: '1.1rem',
+      lineHeight: '1.8',
+      color: '#4A5568',
     },
-    card: {
-      padding: '40px 30px',
-      borderRadius: '14px',
-      border: '1px solid #F7FAFC',
-      backgroundColor: '#fff',
-      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.05)',
-      textAlign: 'center',
-    },
-    iconCircle: {
-      fontSize: '2.5rem',
-      marginBottom: '20px',
-    },
+    paragraph: {
+      marginBottom: '25px',
+    }
   };
 
   return (
@@ -97,27 +90,22 @@ const AboutUs = () => {
         </div>
       </header>
 
-      <section style={styles.actionSection}>
+      <section style={styles.aboutSection}>
         <div style={styles.content}>
-          <h2 style={styles.sectionHeading}>Our Core Mission</h2>
-          <div style={styles.cardGrid}>
-            <div style={styles.card}>
-              <div style={styles.iconCircle}>🎓</div>
-              <h3>Academic Excellence</h3>
-              <p>Promoting high-quality research and teaching standards across all New Zealand tertiary institutions.</p>
-            </div>
-
-            <div style={styles.card}>
-              <div style={styles.iconCircle}>🤝</div>
-              <h3>Industry Connection</h3>
-              <p>Bridging the gap between students and the tech sector through Work-Integrated Learning and partnerships.</p>
-            </div>
-
-            <div style={styles.card}>
-              <div style={styles.iconCircle}>🌐</div>
-              <h3>National Network</h3>
-              <p>Providing a unified voice for computing educators to influence policy and drive innovation in the curriculum.</p>
-            </div>
+          <h2 style={styles.sectionHeading}>About Us</h2>
+          
+          <div style={styles.textContainer}>
+            <p style={styles.paragraph}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            </p>
+            
+            <p style={styles.paragraph}>
+              Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida.
+            </p>
+            
+            <p style={styles.paragraph}>
+              Aliquam sollicitudin ipsum ac diam. Praesent interdum, neque et sed cursus faucibus, leo libero consectetuer lorem, ac condimentum velit libero quis purus. Sed mollis, eros et ultrices tempus, mauris ipsum aliquam libero, non adipiscing dolor urna a orci. Fusce ut placerat orci nulla pellentesque dignissim enim.
+            </p>
           </div>
         </div>
       </section>
