@@ -1,210 +1,205 @@
 import React, { useState } from 'react';
+import { signIn } from './loginService'; // Ensure this path matches your file structure
+import logoImg from '../../assets/logo.png';
 
-// const MOCK_CONFERENCES = [
-//   { id: 1, title: 'CITRENZ Annual Conference 2026', location: 'Christchurch', date: 'Oct 12-14, 2026', status: 'Open' },
-//   { id: 2, title: 'North Island IT Educators Workshop', location: 'Auckland', date: 'Nov 05, 2026', status: 'Open' },
-//   { id: 3, title: 'South Island Computing Symposium', location: 'Dunedin', date: 'Dec 01, 2026', status: 'Open' }
-// ];
 
-const Login = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const loading = false;
+const LoginPage = () => {
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const conferences = MOCK_CONFERENCES.filter(conf =>
-    conf.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    conf.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (error) setError(null); // Clear error when user types
+  };
+
+  // inside LoginPage.jsx
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const { data, error: authError } = await signIn(formData.email, formData.password);
+
+    if (authError) {
+      setError(authError.message);
+    } else {
+      // 1. Store the user data in localStorage
+      localStorage.setItem('currentUser', JSON.stringify(data));
+      
+      // 2. Redirect to the admin panel
+      // If using react-router-dom: navigate('/admin');
+      // For a simple test:
+      window.location.href = '/admin'; 
+    }
+    setLoading(false);
+  };
 
   return (
-    <div style={styles.pageWrapper}>
-      {/* 1. Centered Header at the very top */}
-      <h1 style={styles.mainTitle}>Conferences</h1>
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <header style={styles.header}>
+          <img src={logoImg} alt="CITRENZ Logo" style={styles.logoImage} />
+        </header>
 
-      <div style={styles.mainContainer}>
-        <main style={styles.contentArea}>
-          <header style={styles.header}>
-            <h2 style={styles.title}>Available Conferences</h2>
-            <p>Explore and join upcoming CITRENZ events.</p>
-          </header>
+        <form onSubmit={handleSubmit}>
+          {error && <div style={styles.errorBanner}>{error}</div>}
 
-          <div style={styles.cardGrid}>
-            {conferences.map(conf => (
-              <div key={conf.id} style={styles.card}>
-                <span style={conf.status === 'Open' ? styles.statusOpen : styles.statusClosed}>
-                  {conf.status}
-                </span>
-                <h3 style={styles.cardTitle}>{conf.title}</h3>
-                <p style={styles.details}>{conf.location} • {conf.date}</p>
-                <button style={styles.primaryButton}>View Details</button>
-              </div>
-            ))}
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Email Address</label>
+            <input
+              name="email"
+              type="email"
+              style={styles.input}
+              placeholder="name@institution.ac.nz"
+              onChange={handleChange}
+              value={formData.email}
+              required
+            />
           </div>
 
-          {conferences.length === 0 && (
-            <p style={styles.noResults}>No conferences found matching "{searchTerm}"</p>
-          )}
-        </main>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Password</label>
+            <input
+              name="password"
+              type="password"
+              style={styles.input}
+              placeholder="••••••••"
+              onChange={handleChange}
+              value={formData.password}
+              required
+            />
+          </div>
+
+          {/* <div style={styles.options}>
+            <label style={styles.checkboxLabel}>
+              <input type="checkbox" /> Remember me
+            </label>
+            <a href="#" style={styles.link}>Forgot password?</a>
+          </div> */}
+
+          <button 
+            type="submit" 
+            style={loading ? {...styles.button, opacity: 0.7, cursor: 'not-allowed'} : styles.button}
+            disabled={loading}
+          >
+            {loading ? 'Signing in...' : 'Sign In'}
+          </button>
+        </form>
+
+        <p style={styles.footer}>
+          Don't have an account? <a href="#" style={styles.link}>Sign-up</a>
+        </p>
       </div>
     </div>
   );
 };
 
 const styles = {
-  pageWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
+  container: {
     minHeight: '100vh',
-    fontFamily: 'system-ui, sans-serif',
-    padding: '4.5rem'
-    // backgroundColor: '#f7fafc',
-  },
-  mainTitle: {
-    textAlign: 'center',
-    margin: 0,
-    fontSize: '3rem',
-    fontWeight: '700',
-    color: '#2D3748',
-    // backgroundColor: '#ffffff',
-    // borderBottom: '1px solid #e2e8f0',
-  },
-  title: {
-    textAlign: 'center',
-    margin: 0,
-    fontSize: '1.5rem',
-    fontWeight: '700',
-    color: '#2D3748',
-    // backgroundColor: '#ffffff',
-    // borderBottom: '1px solid #e2e8f0',
-  },
-  mainContainer: {
     display: 'flex',
-    flex: 1, // Takes up remaining height
-    paddingTop: '3.4rem'
-  },
-  sidebar: {
-    width: '20%',
-    padding: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-    // borderRight: '1px solid #e2e8f0',
-  },
-  contentArea: {
-    width: '80%',
-    overflowY: 'auto',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center', // This centers the cardGrid horizontally
-    paddingLeft: '0px',
-
-  },
-  // ... rest of your styles stay exactly the same
-  sidebarButton: {
-    backgroundColor: '#3182ce',
-    color: 'white',
-    padding: '16px',
-    border: 'none',
-    borderRadius: '15px',
-    cursor: 'pointer',
-    fontWeight: 'bold',
-    fontSize: '1.1rem'
-  },
-  filterGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  label: {
-    fontSize: '1rem',
-    fontWeight: '600',
-    color: '#4A5568',
-  },
-  searchInput: {
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #cbd5e0',
-  },
-  select: {
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #cbd5e0',
-    backgroundColor: 'white',
-  },
-  cardGrid: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-    marginTop: '30px',
-    width: '90%', // Takes up 90% of the 80% content area
-    maxWidth: '1000px', // Prevents them from getting too wide on big screens
-    backgroundColor: '#bdbdbd',
-    padding: '30px',
-    borderRadius: '15px',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f3f4f6',
+    fontFamily: 'system-ui, -apple-system, sans-serif',
   },
   card: {
-    backgroundColor: 'white',
-    padding: '25px 25px',
-    borderRadius: '12px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-    border: '1px solid #edf2f7',
+    backgroundColor: '#ffffff',
+    padding: '70px 40px',
+    borderRadius: '20px',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
     width: '100%',
+    maxWidth: '400px', 
     boxSizing: 'border-box',
-    // New horizontal layout rules:
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '20px',
   },
-  cardTitle: {
-    margin: 0,
-    fontSize: '1.1rem',
-    color: '#2D3748',
-    flex: 2, // Grows to take up available middle space
+  header: {
+  display: 'flex',
+  flexDirection: 'column', 
+  alignItems: 'center',   
+  marginBottom: '30px',
   },
-  details: {
-    margin: 0,
-    color: '#718096',
-    fontSize: '0.9rem',
-    flex: 1, // Takes up some space for location/date
-    whiteSpace: 'nowrap', // Keeps it on one line
+  title: {
+    color: '#1e3a8a',
+    fontSize: '28px',
+    margin: '0',
+    fontWeight: '800',
   },
-  statusOpen: {
-    backgroundColor: '#C6F6D5',
-    color: '#22543D',
-    padding: '4px 12px',
-    borderRadius: '20px',
-    fontSize: '0.75rem',
-    fontWeight: 'bold',
+  subtitle: {
+    color: '#6b7280',
+    fontSize: '14px',
+    marginTop: '4px',
   },
-  statusClosed: {
-    backgroundColor: '#FED7D7',
-    color: '#822727',
-    padding: '4px 12px',
-    borderRadius: '20px',
-    fontSize: '0.75rem',
-    fontWeight: 'bold',
-  },
-  primaryButton: {
-    width: 'auto', // Overrides the previous 100% width
-    padding: '8px 20px',
-    backgroundColor: '#3182ce',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-  },
-  noResults: {
+  errorBanner: {
+    backgroundColor: '#fee2e2',
+    color: '#dc2626',
+    padding: '12px',
+    borderRadius: '8px',
+    marginBottom: '20px',
+    fontSize: '14px',
     textAlign: 'center',
-    color: '#718096',
-    marginTop: '50px',
+    border: '1px solid #fecaca',
   },
-  border: {
-    backgroundColor: '#bdbdbd',
-    padding: '15px',
-    borderRadius: '15px',
-  }
+  inputGroup: {
+    marginBottom: '20px',
+  },
+  label: {
+  display: 'block',      
+  textAlign: 'left',     
+  width: '100%',        
+  marginBottom: '5px',   
+  fontSize: '14px',
+  fontWeight: '600',
+  color: '#4A5568',      
+  },
+  input: {
+    width: '100%',
+    padding: '12px',
+    borderRadius: '8px',
+    border: '1px solid #d1d5db',
+    fontSize: '16px',
+    boxSizing: 'border-box',
+  },
+  options: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '25px',
+    fontSize: '14px',
+  },
+  checkboxLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    color: '#374151',
+  },
+  button: {
+    width: '100%',
+    backgroundColor: '#1d4ed8',
+    color: '#ffffff',
+    padding: '12px',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '16px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
+  },
+  footer: {
+    textAlign: 'center',
+    marginTop: '20px',
+    fontSize: '14px',
+    color: '#6b7280',
+  },
+  link: {
+    color: '#2563eb',
+    textDecoration: 'none',
+    fontWeight: '500',
+  },
+  logoImage: { 
+  height: '45px', 
+  width: 'auto',
+  },
 };
 
-export default Login;
+export default LoginPage;

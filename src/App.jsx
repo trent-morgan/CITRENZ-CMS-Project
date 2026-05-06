@@ -1,55 +1,58 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
-import Footer from './Footer'; // Import the new Footer
+import Footer from './Footer';
 import Home from './Home';
 import AboutUs from './AboutUs';
 import ConferencesPage from './features/conference/ConferencesPage';
 import ConferenceDetailPage from './features/conference/ConferenceDetailPage';
+import LoginPage from './features/login/Login';
+import AdminPanel from './features/admin/AdminPanel';
+
+// We create a wrapper component so we can use the 'useLocation' hook
+const AppContent = () => {
+  const location = useLocation();
+
+  // Define which paths should NOT show the global Navbar/Footer
+  // Adjust paths to match your actual route definitions
+  const hideLayout = location.pathname === '/login' || location.pathname.startsWith('/admin');
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      
+      {/* Conditionally render Navbar */}
+      {!hideLayout && <Navbar />}
+
+      <main style={{ flex: 1 }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/conferences" element={<ConferencesPage />} />
+          <Route path="/conference-detail/:id" element={<ConferenceDetailPage />} />            
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/call-for-reviewers" element={<div style={styles.placeholder}>Call for Reviewers Page Coming Soon</div>} />
+          <Route path="/call-for-papers" element={<div style={styles.placeholder}>Call for Papers Page Coming Soon</div>} />
+          <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/contact" element={<div style={styles.placeholder}>Contact Page</div>} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="*" element={<div style={styles.placeholder}>Page Not Found</div>} />
+        </Routes>
+      </main>
+
+      {/* Conditionally render Footer */}
+      {!hideLayout && <Footer />}
+      
+    </div>
+  );
+};
 
 function App() {
   return (
     <Router>
-      {/* 
-          The wrapper div below ensures the footer stays at the bottom.
-          'minHeight: 100vh' makes the app take up the full screen height.
-          'flexDirection: column' stacks Navbar, Content, and Footer.
-      */}
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        
-        <Navbar />
-
-        {/* 'flex: 1' makes this section expand to fill all available space */}
-        <main style={{ flex: 1 }}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            
-            {/* Conference Routes */}
-            <Route path="/conferences" element={<ConferencesPage />} />
-            <Route path="/conference-detail/:id" element={<ConferenceDetailPage />} />            
-            
-            {/* Main Pages */}
-            <Route path="/about-us" element={<AboutUs />} />
-            
-            {/* Placeholder Routes for Services Dropdown */}
-            <Route path="/call-for-reviewers" element={<div style={styles.placeholder}>Call for Reviewers Page Coming Soon</div>} />
-            <Route path="/call-for-papers" element={<div style={styles.placeholder}>Call for Papers Page Coming Soon</div>} />
-            <Route path="/admin" element={<div style={styles.placeholder}>Admin Panel Access Restricted</div>} />
-            <Route path="/contact" element={<div style={styles.placeholder}>Contact Page</div>} />
-
-            {/* 404 Route */}
-            <Route path="*" element={<div style={styles.placeholder}>Page Not Found</div>} />
-          </Routes>
-        </main>
-
-        <Footer />
-        
-      </div>
+      <AppContent />
     </Router>
   );
 }
 
-// Simple styles for the placeholder pages
 const styles = {
   placeholder: {
     padding: '100px 20px',

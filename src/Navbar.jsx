@@ -65,7 +65,9 @@ const Navbar = () => {
       </ul>
 
       <div style={styles.profileContainer}>
-        <img src={profileImg} alt="Profile Icon" style={styles.profileImage} />
+        <Link to="/login" >
+          <img src={profileImg} alt="Profile Icon" style={styles.profileImage} />
+        </Link>
       </div>
     </nav>
   );
