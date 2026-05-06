@@ -50,17 +50,11 @@ const Navbar = () => {
         <li style={styles.link}>
           <Link to="/conferences" style={styles.cleanLink}>Conferences</Link>
         </li>
-        <li style={styles.link}>Contact</li>
+        <li style={styles.link}>
+            <Link to="/contact" style={styles.cleanLink}>Contact</Link>
+        </li>
         <li style={styles.link}>
           <Link to="/about-us" style={styles.cleanLink}>About Us</Link>
-        </li>
-      </ul>
-
-      <ul style={styles.navLinks}>
-        <li style={styles.link}>
-          <Link to="/conferences" style={styles.gradientLink} className="nav-gradient-btn">
-            Create Conference
-          </Link>
         </li>
       </ul>
 
@@ -80,9 +74,8 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '0 40px',
-    height: '70px',
-    backgroundColor: '#ffffff',
-    borderBottom: '1px solid #E2E8F0',
+    height: '80px',
+    backgroundColor: '#133860',
     position: 'sticky',
     top: 0,
     zIndex: 1000,
@@ -97,7 +90,7 @@ const styles = {
   },
   link: {
     fontSize: '0.95rem',
-    color: '#4A5568',
+    color: '#ffffff',
     cursor: 'pointer',
     fontWeight: '600',
     display: 'flex',
@@ -143,7 +136,18 @@ const styles = {
   // ... existing styles ...
   cleanLink: { textDecoration: 'none', color: 'inherit' },
   logoContainer: { display: 'flex', alignItems: 'center', height: '100%' },
-  logoImage: { height: '35px', width: 'auto', display: 'block' },
+  logoImage: {
+      height: '40px',             // Made it slightly larger
+      width: 'auto',
+      display: 'block',
+      backgroundColor: 'white',
+      padding: '8px 15px',        // More horizontal padding looks better
+      borderRadius: '50px',       // Fully rounded "pill" shape
+      transition: 'all 0.3s ease', // Smooth transition for the glow
+      cursor: 'pointer',
+      // The "Glow" effect:
+      filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))', 
+  },
   profileContainer: { display: 'flex', alignItems: 'center', height: '100%' },
   profileImage: { height: '45px', width: 'auto', display: 'block' },
   gradientLink: {

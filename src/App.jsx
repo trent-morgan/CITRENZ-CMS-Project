@@ -8,6 +8,8 @@ import ConferencesPage from './features/conference/ConferencesPage';
 import ConferenceDetailPage from './features/conference/ConferenceDetailPage';
 import LoginPage from './features/login/Login';
 import AdminPanel from './features/admin/AdminPanel';
+import Contact from './features/contact/Contact';
+
 
 // We create a wrapper component so we can use the 'useLocation' hook
 const AppContent = () => {
@@ -32,7 +34,7 @@ const AppContent = () => {
           <Route path="/call-for-reviewers" element={<div style={styles.placeholder}>Call for Reviewers Page Coming Soon</div>} />
           <Route path="/call-for-papers" element={<div style={styles.placeholder}>Call for Papers Page Coming Soon</div>} />
           <Route path="/admin" element={<AdminPanel />} />
-          <Route path="/contact" element={<div style={styles.placeholder}>Contact Page</div>} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="*" element={<div style={styles.placeholder}>Page Not Found</div>} />
         </Routes>

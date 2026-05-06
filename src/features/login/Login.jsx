@@ -101,7 +101,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f3f4f6',
+    background: 'linear-gradient(120deg, #143767, #6C98B1)',
     fontFamily: 'system-ui, -apple-system, sans-serif',
   },
   card: {
@@ -175,7 +175,7 @@ const styles = {
   },
   button: {
     width: '100%',
-    backgroundColor: '#1d4ed8',
+    backgroundColor: '#133860',
     color: '#ffffff',
     padding: '12px',
     border: 'none',
@@ -192,7 +192,7 @@ const styles = {
     color: '#6b7280',
   },
   link: {
-    color: '#2563eb',
+    color: '#2E92C4',
     textDecoration: 'none',
     fontWeight: '500',
   },
