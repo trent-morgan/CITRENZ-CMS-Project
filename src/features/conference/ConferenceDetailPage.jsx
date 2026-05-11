@@ -1,68 +1,103 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const MOCK_CONFERENCES = [
-  { id: 1, title: 'CITRENZ Annual Conference 2026', location: 'Christchurch', date: 'Oct 12-14, 2026', status: 'Open', description: 'The premier event for IT education and research in New Zealand.' },
-  { id: 2, title: 'North Island IT Educators Workshop', location: 'Auckland', date: 'Nov 05, 2026', status: 'Open', description: 'A hands-on workshop focusing on modern web frameworks and AI integration.' },
-  { id: 3, title: 'South Island Computing Symposium', location: 'Dunedin', date: 'Dec 01, 2026', status: 'Open', description: 'Exploring the future of cloud computing and decentralized networks.' }
+export const MOCK_CONFERENCES = [
+  { 
+    id: 1, 
+    title: 'CITRENZ Annual Conference 2026', 
+    location: 'Christchurch, New Zealand', 
+    date: 'Oct 12-14, 2026', 
+    status: 'Open', 
+    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit nec nisl sit amet tristique. Nunc eu mollis odio. Integer vehicula, ex a semper vestibulum, arcu lacus dignissim nisl, at iaculis tortor est semper nulla. Mauris laoreet nec lorem quis tempus. Sed nec ornare justo. Nulla facilisi. Aenean id ultrices magna. Mauris quis lacus tincidunt, commodo nibh non, tincidunt velit. In sed ante ante. Donec convallis, orci nec mattis tristique, dui nulla sodales quam, et malesuada velit metus at nulla. Integer id orci risus. Nullam placerat nunc lacus, et consectetur quam pulvinar ac. Maecenas id sem quis sem vehicula luctus. Curabitur quis orci ultricies ante malesuada posuere. Donec a nulla nec nulla tincidunt vulputate. Etiam fermentum tristique augue.',
+    importantDates: [
+      { label: 'Paper Submission Deadline', date: 'July 15, 2026' },
+      { label: 'Notification of Acceptance', date: 'August 20, 2026' },
+      { label: 'Camera Ready Paper Due', date: 'September 10, 2026' },
+      { label: 'Conference Begins', date: 'October 12, 2026' }
+    ],
+    keyInfo: {
+      format: 'Hybrid (In-person & Online)',
+      tracks: 'AI, Cybersecurity, Software Eng, IT Ed',
+      contact: 'admin@citrenz.ac.nz'
+    }
+  },
+  // ... other mock items can follow this structure
 ];
 
 const ConferenceDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Find the conference that matches the ID from the URL
   const conference = MOCK_CONFERENCES.find(conf => conf.id === parseInt(id));
 
-  // If no conference is found, show a simple error state
   if (!conference) {
     return (
       <div style={styles.pageWrapper}>
         <h1 style={styles.mainTitle}>Conference Not Found</h1>
-        <button onClick={() => navigate('/conferences')} style={styles.backButton}>
-          Back to Conferences
-        </button>
+        <button onClick={() => navigate('/conferences')} style={styles.backButton}>← Back to Conferences</button>
       </div>
     );
   }
 
   return (
     <div style={styles.pageWrapper}>
-      <header style={styles.headerSection}>
+      <div style={styles.backButtonContainer}>
         <button onClick={() => navigate('/conferences')} style={styles.backButton}>
           ← Back to List
         </button>
+      </div>
+
+      <header style={styles.headerSection}>
         <h1 style={styles.mainTitle}>{conference.title}</h1>
         <span style={conference.status === 'Open' ? styles.statusOpen : styles.statusClosed}>
           {conference.status}
         </span>
       </header>
 
-      <div style={styles.mainContainer}>
-        <main style={styles.contentArea}>
-          <div style={styles.infoGrid}>
-            <div style={styles.infoCard}>
-              <label style={styles.label}>Location</label>
-              <p style={styles.infoText}>{conference.location}</p>
-            </div>
-            <div style={styles.infoCard}>
-              <label style={styles.label}>Date</label>
-              <p style={styles.infoText}>{conference.date}</p>
-            </div>
-          </div>
-
-          <section style={styles.detailsSection}>
+      <div style={styles.layoutGrid}>
+        {/* LEFT COLUMN: Main Description & Action */}
+        <main style={styles.mainContent}>
+          <section style={styles.section}>
             <h2 style={styles.subTitle}>About this Conference</h2>
-            <p style={styles.description}>
-              {conference.description || "No detailed description provided."}
-            </p>
+            <p style={styles.description}>{conference.description}</p>
           </section>
 
           <div style={styles.actionRow}>
-            <button style={styles.primaryButton}>Submit a Paper</button>
+            <button onClick={() => navigate('../paper-submission/' + conference.id)} style={styles.primaryButton}>
+              Submit a Paper
+            </button>
             <button style={styles.secondaryButton}>Register to Attend</button>
           </div>
         </main>
+
+        {/* RIGHT COLUMN: Key Dates & Info Sidebar */}
+        <aside style={styles.sidebar}>
+          <div style={styles.sidebarCard}>
+            <h3 style={styles.sidebarTitle}>📅 Important Dates</h3>
+            {conference.importantDates.map((item, index) => (
+              <div key={index} style={styles.dateItem}>
+                <span style={styles.dateLabel}>{item.label}</span>
+                <span style={styles.dateValue}>{item.date}</span>
+              </div>
+            ))}
+          </div>
+
+          <div style={styles.sidebarCard}>
+            <h3 style={styles.sidebarTitle}>ℹ️ Key Information</h3>
+            <div style={styles.infoRow}>
+              <strong>Format:</strong> {conference.keyInfo.format}
+            </div>
+            <div style={styles.infoRow}>
+              <strong>Tracks:</strong> {conference.keyInfo.tracks}
+            </div>
+            <div style={styles.infoRow}>
+              <strong>Venue:</strong> {conference.location}
+            </div>
+            <div style={styles.infoRow}>
+              <strong>Contact:</strong> <span style={{color: '#3182ce'}}>{conference.keyInfo.contact}</span>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );
@@ -70,7 +105,11 @@ const ConferenceDetailPage = () => {
 
 const styles = {
   pageWrapper: {
-    padding: '4rem 5%',
+    paddingLeft: '4rem 5%',
+    paddingRight: '4rem 5%',
+    paddingTop: '2rem',
+    paddingBottom: '2rem',
+
     fontFamily: 'system-ui, sans-serif',
     color: '#2D3748',
     maxWidth: '1000px',
@@ -92,6 +131,12 @@ const styles = {
     cursor: 'pointer',
     fontSize: '1rem',
     fontWeight: '600',
+    alignItems: 'flex-start',
+  },
+  backButtonContainer: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    paddingBottom: '1rem',
   },
   statusOpen: {
     backgroundColor: '#C6F6D5',
@@ -159,7 +204,73 @@ const styles = {
     borderRadius: '8px',
     fontWeight: 'bold',
     cursor: 'pointer',
-  }
+  },
+  // ... existing pageWrapper, mainTitle, status styles ...
+  
+  layoutGrid: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 350px', // Creates the sidebar look
+    gap: '40px',
+    alignItems: 'start',
+  },
+  
+  // Sidebar styling
+  sidebar: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+  },
+  sidebarCard: {
+    backgroundColor: '#F7FAFC',
+    padding: '24px',
+    borderRadius: '12px',
+    border: '1px solid #E2E8F0',
+  },
+  sidebarTitle: {
+    fontSize: '1.1rem',
+    margin: '0 0 16px 0',
+    color: '#2D3748',
+    borderBottom: '2px solid #E2E8F0',
+    paddingBottom: '8px',
+  },
+  
+  // Date List Styling
+  dateItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginBottom: '12px',
+    paddingLeft: '10px',
+    borderLeft: '3px solid #3182ce', // Timeline "strip" effect
+  },
+  dateLabel: {
+    fontSize: '0.8rem',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    color: '#718096',
+  },
+  dateValue: {
+    fontSize: '1rem',
+    color: '#2D3748',
+    fontWeight: '600',
+  },
+
+  infoRow: {
+    fontSize: '0.95rem',
+    marginBottom: '10px',
+    color: '#4A5568',
+  },
+  description: {
+    lineHeight: '1.6',
+    color: '#4A5568',
+    fontSize: '0.9rem',
+  },
+
+  // Adjustments for mobile
+  '@media (max-width: 850px)': {
+    layoutGrid: {
+      gridTemplateColumns: '1fr',
+    },
+  },
 };
 
 export default ConferenceDetailPage;

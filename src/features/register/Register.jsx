@@ -1,38 +1,37 @@
 import React, { useState } from 'react';
-import { signIn } from './loginService'; // Ensure this path matches your file structure
+import { signUp } from './registerService'; // Logic moved here
 import logoImg from '../../assets/logo.png';
-import { useNavigate, Link } from 'react-router-dom'; // Add this
+import { Link } from 'react-router-dom'; // Add this
 
 
-
-const LoginPage = () => {
-  const navigate = useNavigate(); 
-  const [formData, setFormData] = useState({ email: '', password: '' });
+const RegistrationPage = () => {
+  // 1. Updated state to include all fields required by registerService
+  const [formData, setFormData] = useState({ 
+    fullName: '', 
+    email: '', 
+    institution: '', 
+    password: '' 
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (error) setError(null); // Clear error when user types
+    if (error) setError(null);
   };
 
-  // inside LoginPage.jsx
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const { data, error: authError } = await signIn(formData.email, formData.password);
+    // 2. Pass the entire formData object to signUp
+    const { data, error: authError } = await signUp(formData);
 
     if (authError) {
       setError(authError.message);
     } else {
-      // 1. Store the user data in localStorage
       localStorage.setItem('currentUser', JSON.stringify(data));
-      
-      // 2. Redirect to the admin panel
-      // If using react-router-dom: navigate('/admin');
-      // For a simple test:
       window.location.href = '/admin'; 
     }
     setLoading(false);
@@ -42,13 +41,27 @@ const LoginPage = () => {
     <div style={styles.container}>
       <div style={styles.card}>
         <header style={styles.header}>
-          <Link to="/" style={styles.logoLink}>
+        <Link to="/" style={styles.logoLink}>
             <img src={logoImg} alt="CITRENZ Logo" style={styles.logoImage} />
-          </Link>
+        </Link>
         </header>
 
         <form onSubmit={handleSubmit}>
           {error && <div style={styles.errorBanner}>{error}</div>}
+
+          {/* New Full Name Field */}
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Full Name</label>
+            <input
+              name="fullName"
+              type="text"
+              style={styles.input}
+              placeholder="Trent Morgan"
+              onChange={handleChange}
+              value={formData.fullName}
+              required
+            />
+          </div>
 
           <div style={styles.inputGroup}>
             <label style={styles.label}>Email Address</label>
@@ -59,6 +72,20 @@ const LoginPage = () => {
               placeholder="name@institution.ac.nz"
               onChange={handleChange}
               value={formData.email}
+              required
+            />
+          </div>
+
+          {/* New Institution Field */}
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Institution</label>
+            <input
+              name="institution"
+              type="text"
+              style={styles.input}
+              placeholder="e.g. Ara Institute"
+              onChange={handleChange}
+              value={formData.institution}
               required
             />
           </div>
@@ -76,30 +103,17 @@ const LoginPage = () => {
             />
           </div>
 
-          {/* <div style={styles.options}>
-            <label style={styles.checkboxLabel}>
-              <input type="checkbox" /> Remember me
-            </label>
-            <a href="#" style={styles.link}>Forgot password?</a>
-          </div> */}
-
           <button 
             type="submit" 
             style={loading ? {...styles.button, opacity: 0.7, cursor: 'not-allowed'} : styles.button}
             disabled={loading}
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
 
-          <p style={styles.footer}>
-          Don't have an account?{' '}
-          <span 
-            onClick={() => navigate('/register')} // Update this path to match your App.js route
-            style={{ ...styles.link, cursor: 'pointer' }}
-          >
-            Sign-up
-          </span>
+        <p style={styles.footer}>
+          Already have an account? <a href="/login" style={styles.link}>Sign-in</a>
         </p>
       </div>
     </div>
@@ -114,6 +128,7 @@ const styles = {
     justifyContent: 'center',
     background: 'linear-gradient(120deg, #143767, #6C98B1)',
     fontFamily: 'system-ui, -apple-system, sans-serif',
+    padding: '70px 40px',
   },
   card: {
     backgroundColor: '#ffffff',
@@ -213,4 +228,4 @@ const styles = {
   },
 };
 
-export default LoginPage;
+export default RegistrationPage;

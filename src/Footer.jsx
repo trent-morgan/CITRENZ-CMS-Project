@@ -14,15 +14,15 @@ const Footer = () => {
 
 const styles = {
   footer: {
-    backgroundColor: '#22263b',
-    borderTop: '1px solid #E2E8F0',
+    backgroundColor: '#f0f0f0',
+    // borderTop: '1px solid #949494',
     padding: '20px 40px',
     textAlign: 'center',
     marginTop: 'auto', // Keeps it at the bottom of the flex wrapper
   },
   copyright: {
     fontSize: '0.85rem',
-    color: '#ffffff',
+    color: '#696969',
     margin: 0,
     fontWeight: '500',
     fontFamily: 'system-ui, sans-serif',

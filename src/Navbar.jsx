@@ -34,10 +34,13 @@ const Navbar = () => {
           {dropdownOpen && (
             <ul style={styles.dropdownMenu}>
               <li style={styles.dropdownItem}>
-                <Link to="/call-for-reviewers" style={styles.cleanLink}>Call for Reviewers</Link>
+                <Link to="/call-for-reviewers" style={styles.cleanLink}>My Conferences</Link>
               </li>
               <li style={styles.dropdownItem}>
-                <Link to="/call-for-papers" style={styles.cleanLink}>Call for Papers</Link>
+                <Link to="/call-for-reviewers" style={styles.cleanLink}>My Papers</Link>
+              </li>
+              <li style={styles.dropdownItem}>
+                <Link to="/call-for-papers" style={styles.cleanLink}>Review Panel</Link>
               </li>
               <li style={styles.dropdownItemSeparator}></li>
               <li style={styles.dropdownItem}>
@@ -74,7 +77,7 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '0 40px',
-    height: '80px',
+    height: '60px',
     backgroundColor: '#133860',
     position: 'sticky',
     top: 0,
@@ -89,7 +92,7 @@ const styles = {
     alignItems: 'center',
   },
   link: {
-    fontSize: '0.95rem',
+    fontSize: '0.9rem',
     color: '#ffffff',
     cursor: 'pointer',
     fontWeight: '600',
@@ -137,7 +140,7 @@ const styles = {
   cleanLink: { textDecoration: 'none', color: 'inherit' },
   logoContainer: { display: 'flex', alignItems: 'center', height: '100%' },
   logoImage: {
-      height: '40px',             // Made it slightly larger
+      height: '30px',             // Made it slightly larger
       width: 'auto',
       display: 'block',
       backgroundColor: 'white',
@@ -145,8 +148,7 @@ const styles = {
       borderRadius: '50px',       // Fully rounded "pill" shape
       transition: 'all 0.3s ease', // Smooth transition for the glow
       cursor: 'pointer',
-      // The "Glow" effect:
-      filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))', 
+      // filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))', 
   },
   profileContainer: { display: 'flex', alignItems: 'center', height: '100%' },
   profileImage: { height: '45px', width: 'auto', display: 'block' },

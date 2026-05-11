@@ -1,102 +1,139 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const MOCK_CONFERENCES = [
+export const MOCK_CONFERENCES = [
   { id: 1, title: 'CITRENZ Annual Conference 2026', location: 'Christchurch', date: 'Oct 12-14, 2026', status: 'Open' },
   { id: 2, title: 'North Island IT Educators Workshop', location: 'Auckland', date: 'Nov 05, 2026', status: 'Open' },
   { id: 3, title: 'South Island Computing Symposium', location: 'Dunedin', date: 'Dec 01, 2026', status: 'Open' },
-  { id: 4, title: 'Future of Tech Education Summit', location: 'Wellington', date: 'Jan 20, 2027', status: 'Closed' }
+  { id: 4, title: 'Future of Tech Education Summit', location: 'Wellington', date: 'Jan 20, 2027', status: 'Closed' },
+  { id: 5, title: 'Cybersecurity in NZ Schools', location: 'Hamilton', date: 'Feb 15, 2027', status: 'Open' },
+  { id: 6, title: 'AI Integration in Tertiary Ed', location: 'Nelson', date: 'March 10, 2027', status: 'Open' },
+  { id: 7, title: 'Cloud Computing Workshop', location: 'Napier', date: 'April 05, 2027', status: 'Closed' },
 ];
 
 const ConferencesPage = () => {
+  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState('All Locations');
+  const [showOnlyOpen, setShowOnlyOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('quick');
+  
+  // PAGINATION STATE
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  const navigate = useNavigate(); // 2. Add this line inside the component
+  // Reset to page 1 whenever filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedLocation, showOnlyOpen, activeTab]);
 
   const handleViewDetail = (id) => {
-    // This will move the user to the detail page
-    // Using backticks allows you to pass a dynamic ID (like your UUID)
     navigate(`/conference-detail/${id}`);
   };
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const loading = false;
+  // 1. Filter the list
+  const filteredConferences = MOCK_CONFERENCES.filter(conf => {
+    const matchesSearch = activeTab === 'quick' ? (
+      conf.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      conf.location.toLowerCase().includes(searchTerm.toLowerCase())
+    ) : true;
 
-  const [showOnlyOpen, setShowOnlyOpen] = useState(false);
+    const matchesLocation = activeTab === 'advanced' && selectedLocation !== 'All Locations' ? (
+      conf.location === selectedLocation
+    ) : true;
 
-  const conferences = MOCK_CONFERENCES.filter(conf => {
-  const matchesSearch = conf.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        conf.location.toLowerCase().includes(searchTerm.toLowerCase());
-  
-  // If checkbox is checked, only return 'Open' status. Otherwise, return all.
-  const matchesStatus = showOnlyOpen ? conf.status === 'Open' : true;
+    const matchesStatus = activeTab === 'advanced' && showOnlyOpen ? (
+      conf.status === 'Open'
+    ) : true;
 
-  return matchesSearch && matchesStatus;
+    return matchesSearch && matchesLocation && matchesStatus;
   });
+
+  // 2. Paginate the filtered list
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentConferences = filteredConferences.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredConferences.length / itemsPerPage);
+
+  const locations = ['All Locations', ...new Set(MOCK_CONFERENCES.map(c => c.location))];
 
   return (
     <div style={styles.pageWrapper}>
-      {/* 1. Centered Header at the very top */}
       <h1 style={styles.mainTitle}>Conferences</h1>
-      <p className="info">Want people to see your next upcoming conference? Create a new conference</p>
 
       <div style={styles.mainContainer}>
-        {/* LEFT SIDE: Sidebar (20%) */}
-        <aside style={styles.sidebar}>
-          {/* <p className="info">Want people to see your next upcoming conference? Create a new conference</p> */}
-          <button style={styles.sidebarButton}>Create Conference</button>
-          
-          <div style={styles.filterGroup}>
-            <label style={styles.label}>Search</label>
-            <div style={styles.border}>
-              <input 
-              type="text" 
-              placeholder="Type to search..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              style={styles.searchInput}
-              />
-            </div>
+        {/* TABBED SEARCH CONTAINER */}
+        <section style={styles.searchComponent}>
+          <div style={styles.tabHeader}>
+            <button 
+              onClick={() => setActiveTab('quick')}
+              style={activeTab === 'quick' ? styles.tabActive : styles.tabInactive}
+            >
+              Quick Search
+            </button>
+            <button 
+              onClick={() => setActiveTab('advanced')}
+              style={activeTab === 'advanced' ? styles.tabActive : styles.tabInactive}
+            >
+              Advanced Search
+            </button>
           </div>
 
-          <div style={styles.filterGroup}>
-            <label style={styles.label}>Filters</label>
-            <div style={styles.border}>
-              <label style={styles.checkboxContainer}>
+          <div style={styles.tabContent}>
+            {activeTab === 'quick' && (
+              <div style={styles.inputContainer}>
                 <input 
-                  type="checkbox" 
-                  checked={showOnlyOpen}
-                  onChange={(e) => setShowOnlyOpen(e.target.checked)}
-                  style={styles.checkbox}
+                  type="text" 
+                  placeholder="Search by name, topic, or location..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={styles.searchInputTabbed}
                 />
-                <span style={styles.filterLabel}>Only Open</span>
-              </label>
-                <select style={styles.select}>
-                <option>All Locations</option>
-                <option>Christchurch</option>
-                <option>Auckland</option>
-                <option>Wellington</option>
-                <option>Dunedin</option>
-                <option>Queenstown</option>
-              </select>
-            </div>
+              </div>
+            )}
+
+            {activeTab === 'advanced' && (
+              <div style={styles.advancedFiltersGroup}>
+                <div style={styles.filterGroupInline}>
+                  <label style={styles.advancedLabel}>Filter by Location</label>
+                  <select 
+                    style={styles.advancedSelect}
+                    value={selectedLocation}
+                    onChange={(e) => setSelectedLocation(e.target.value)}
+                  >
+                    {locations.map(loc => <option key={loc}>{loc}</option>)}
+                  </select>
+                </div>
+
+                <div style={styles.filterGroupInline}>
+                  <label style={styles.advancedLabel}>Conference Status</label>
+                  <label style={styles.advancedCheckboxContainer}>
+                    <input 
+                      type="checkbox" 
+                      checked={showOnlyOpen}
+                      onChange={(e) => setShowOnlyOpen(e.target.checked)}
+                      style={styles.checkbox}
+                    />
+                    <span style={styles.filterLabelTabbed}>Show Only Open Conferences</span>
+                  </label>
+                </div>
+              </div>
+            )}
           </div>
-        </aside>
+        </section>
 
-        {/* RIGHT SIDE: Content (80%) */}
-
+        {/* BOTTOM SECTION: Content */}
         <main style={styles.contentArea}>
-          {/* <header style={styles.header}>
-            <h2 style={styles.title}>Available Conferences</h2>
-            <p>Explore and join upcoming CITRENZ events.</p>
-          </header> */}
           <div style={styles.cardGrid}>
-            {conferences.map(conf => (
+            {currentConferences.map(conf => (
               <div key={conf.id} style={styles.card}>
-                <span style={conf.status === 'Open' ? styles.statusOpen : styles.statusClosed}>
-                  {conf.status}
-                </span>
-                <h3 style={styles.cardTitle}>{conf.title}</h3>
-                <p style={styles.details}>{conf.location} • {conf.date}</p>
+                <div style={styles.cardInfoGroup}>
+                  <span style={conf.status === 'Open' ? styles.statusOpen : styles.statusClosed}>
+                    {conf.status}
+                  </span>
+                  <h3 style={styles.cardTitle}>{conf.title}</h3>
+                  <p style={styles.details}>{conf.location} • {conf.date}</p>
+                </div>
                 <button style={styles.primaryButton} 
                   onClick={() => handleViewDetail(conf.id)}>
                   View Details
@@ -105,8 +142,33 @@ const ConferencesPage = () => {
             ))}
           </div>
 
-          {conferences.length === 0 && (
-            <p style={styles.noResults}>No conferences found matching "{searchTerm}"</p>
+          {filteredConferences.length === 0 && (
+            <p style={styles.noResults}>No conferences found.</p>
+          )}
+
+          {/* PAGINATION CONTROLS */}
+          {totalPages > 1 && (
+            <div style={styles.paginationContainer}>
+              <button 
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(prev => prev - 1)}
+                style={currentPage === 1 ? styles.pageBtnDisabled : styles.pageBtn}
+              >
+                Previous
+              </button>
+              
+              <span style={styles.pageInfo}>
+                Page <strong>{currentPage}</strong> of {totalPages}
+              </span>
+
+              <button 
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                style={currentPage === totalPages ? styles.pageBtnDisabled : styles.pageBtn}
+              >
+                Next
+              </button>
+            </div>
           )}
         </main>
       </div>
@@ -115,183 +177,87 @@ const ConferencesPage = () => {
 };
 
 const styles = {
-  pageWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh',
-    fontFamily: 'system-ui, sans-serif',
-    padding: '1rem 1rem', // Reduced side padding for mobile
-    maxWidth: '1200px',   // 🔥 Prevents drifting too far apart on big screens
-    margin: '0 auto',      // 🔥 Centers the whole app on the screen
-    width: '100%',
-    boxSizing: 'border-box',
-  },
-  mainTitle: {
-    textAlign: 'center',
-    margin: '1rem 0',
-    fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', // Scales font size based on screen width
-    fontWeight: '700',
-    color: '#2D3748',
-  },
-  mainContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap', // 🔥 Allows sidebar to drop below content on very small screens
-    gap: '2rem',      // Adds consistent spacing between sidebar and content
-    marginTop: '1rem',
-  },
-  sidebar: {
-    flex: '1 1 250px', // 🔥 "Grow, Shrink, but try to stay at 250px"
-    maxWidth: '300px', // Prevents sidebar from getting too huge
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-  },
+  // ... (previous styles kept for pageWrapper, mainTitle, searchComponent, tabs)
+  pageWrapper: { display: 'flex', flexDirection: 'column', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', padding: '1rem', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' },
+  mainTitle: { textAlign: 'center', margin: '1rem 0 2rem 0', fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', fontWeight: '700', color: '#2D3748' },
+  mainContainer: { display: 'flex', flexDirection: 'column', gap: '2rem' },
+  
+  searchComponent: { backgroundColor: '#133860', borderRadius: '15px', overflow: 'hidden' },
+  tabHeader: { display: 'flex', width: '100%', borderBottom: '1px solid #a0aec0'},
+  tabActive: { flex: 1, padding: '1.5rem 1rem', backgroundColor: 'transparent', color: '#1a202c', border: 'none', borderBottom: '4px solid #58a5cc', cursor: 'pointer', fontWeight: '700', fontSize: '1rem', color: '#FFFFFF' },
+  tabInactive: { flex: 1, padding: '1.5rem 1rem', backgroundColor: 'transparent', color: '#4A5568', border: 'none', borderBottom: '4px solid transparent', cursor: 'pointer', fontWeight: '600', fontSize: '1rem',color: '#ffffffad'},
+  tabContent: { padding: '2.5rem 2rem', height: '80px' },
+  inputContainer: { display: 'flex', justifyContent: 'center' },
+  searchInputTabbed: { padding: '1.2rem 1.5rem', borderRadius: '8px', border: '1px solid #a0aec0', width: '100%', maxWidth: '900px', backgroundColor: 'white', fontSize: '1rem' },
+  
+  advancedFiltersGroup: { display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' },
+  filterGroupInline: { display: 'flex', flexDirection: 'column', gap: '10px', flex: '1 1 300px', maxWidth: '400px' },
+  advancedLabel: { fontSize: '0.9rem', fontWeight: '600', color: '#ffffff', textTransform: 'uppercase' },
+  advancedSelect: { padding: '1rem', borderRadius: '8px', border: '1px solid #a0aec0', backgroundColor: 'white' },
+  advancedCheckboxContainer: { display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', height: '52px', backgroundColor: 'white', padding: '0 1rem', borderRadius: '8px', border: '1px solid #a0aec0' },
+  checkbox: { width: '18px', height: '18px' },
+  filterLabelTabbed: { fontSize: '0.95rem', color: '#2D3748' },
+
   contentArea: {
     backgroundColor: '#f0f0f0',
     borderRadius: '15px',
-    flex: '3 1 400px',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    /* 🔥 Added these for scrolling */
-    height: 'calc(100vh - 12rem)', // Adjust 200px based on your header height
-    overflowY: 'auto',             // Enables the scrollbar
-    paddingRight: '10px',          // Space for the scrollbar
-    scrollbarWidth: 'thin',        // Firefox styling
-  },
-  cardGrid: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
     width: '100%',
-    maxWidth: '1000px',
-
-    padding: '30px',
-
+    padding: '20px 0', // Added padding top/bottom
+  },
+    cardGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    padding: '0 20px',
     boxSizing: 'border-box',
-    /* 🔥 Ensure the grid expands to fit all cards inside the scroll area */
-    minHeight: 'min-content', 
   },
   card: {
     backgroundColor: 'white',
-    padding: '20px',
+    padding: '40px',
     borderRadius: '12px',
     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-    border: '1px solid #edf2f7',
     display: 'flex',
-    flexDirection: 'row',
-    flexWrap: 'wrap', // 🔥 Allows button/details to wrap if the screen is too thin
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: '15px',
   },
-  cardTitle: {
-    margin: 0,
-    fontSize: '0.9rem',
-    color: '#2D3748',
-    minWidth: '200px', // Ensures title doesn't get squashed to 1 letter width
-    flex: '2 1 0',
-  },
-  details: {
-    margin: 0,
-    color: '#718096',
-    fontSize: '0.8rem',
-    flex: '1 1 auto',
-  },
-  // ... Keep statusOpen, statusClosed, primaryButton, etc. as they were
-  statusOpen: {
-    backgroundColor: '#C6F6D5',
-    color: '#22543D',
-    padding: '4px 12px',
-    borderRadius: '20px',
-    fontSize: '0.75rem',
-    fontWeight: 'bold',
-  },
-  statusClosed: {
-    backgroundColor: '#FED7D7',
-    color: '#822727',
-    padding: '4px 12px',
-    borderRadius: '20px',
-    fontSize: '0.75rem',
-    fontWeight: 'bold',
-  },
-  primaryButton: {
-    padding: '8px 20px',
-    backgroundColor: '#3182ce',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontWeight: '600',
-  },
-  filterGroup: {
+  cardInfoGroup: { display: 'flex', alignItems: 'center', gap: '20px', flex: '1', flexWrap: 'wrap' },
+  cardTitle: { margin: 0, fontSize: '1.2rem', color: '#2D3748', flex: '2 1 250px' },
+  details: { margin: 0, color: '#718096', fontSize: '0.85rem' },
+  statusOpen: { backgroundColor: '#C6F6D5', color: '#22543D', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' },
+  statusClosed: { backgroundColor: '#FED7D7', color: '#822727', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' },
+  primaryButton: { padding: '10px 24px', backgroundColor: '#3182ce', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' },
+  
+  // NEW PAGINATION STYLES
+  paginationContainer: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '20px',
+    padding: '30px 20px',
   },
-  searchInput: {
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #cbd5e0',
-    width: '100%',
-    boxSizing: 'border-box',
-  },
-  select: {
-    padding: '10px',
-    borderRadius: '6px',
-    border: '1px solid #cbd5e0',
-    backgroundColor: 'white',
-    width: '100%',
-  },
-  border: {
-    backgroundColor: '#e2e8f0',
-    padding: '15px',
-    borderRadius: '15px',
-  },
-  sidebarButton: {
+  pageBtn: {
+    padding: '8px 16px',
     backgroundColor: '#3182ce',
     color: 'white',
-    padding: '16px',
     border: 'none',
-    borderRadius: '15px',
+    borderRadius: '6px',
     cursor: 'pointer',
-    fontWeight: 'bold',
-    fontSize: '1.1rem'
-  },
-  label: {
-    fontSize: '1rem',
     fontWeight: '600',
+  },
+  pageBtnDisabled: {
+    padding: '8px 16px',
+    backgroundColor: '#cbd5e0',
+    color: '#718096',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'not-allowed',
+  },
+  pageInfo: {
+    fontSize: '0.9rem',
     color: '#4A5568',
   },
-  header: {
-    textAlign: 'center',
-    marginBottom: '1rem'
-  },
-  title: {
-    fontSize: '1.5rem',
-    fontWeight: '700',
-    color: '#2D3748',
-  },
-  checkboxContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    cursor: 'pointer',
-    backgroundColor: '#e2e8f0', // Matching your other filter borders
-    padding: '15px',
-    borderRadius: '15px',
-  },
-  checkbox: {
-    width: '18px',
-    height: '18px',
-    cursor: 'pointer',
-  },
-  filterLabel: {
-    fontSize: '0.7rem',
-    fontWeight: '500',
-    color: '#000000',
-  },
+  noResults: { textAlign: 'center', padding: '40px', color: '#718096' }
 };
 
 export default ConferencesPage;

@@ -1,5 +1,9 @@
 import React from 'react';
 import heroBG from './assets/it_conference.jpg';
+import adminIcon from './assets/admin_icon.png';
+import reviewIcon from './assets/review_icon.png';
+import publishIcon from './assets/publish_icon.png';
+
 
 const Home = () => {
   const conferenceDetails = {
@@ -24,24 +28,35 @@ const Home = () => {
         <div style={styles.content}>
           <h2 style={styles.sectionHeading}>Portal Access</h2>
           <div style={styles.cardGrid}>
+            
+            {/* Authors Card */}
             <div style={styles.card}>
+              <img src={publishIcon} alt="Authors" style={styles.cardIcon} />
               <h3>Authors</h3>
-              <p>Upload manuscripts and manage your submission history.</p>
+              <p>Upload manuscripts to a confernce.</p>
               <button style={styles.primaryButton}>Submit Paper</button>
             </div>
 
+            {/* Reviewers Card - Added reviewIcon */}
             <div style={styles.card}>
+              <img src={reviewIcon} alt="Reviewers" style={styles.cardIcon} />
               <h3>Reviewers</h3>
               <p>Access assigned papers and complete evaluation forms.</p>
               <button style={styles.secondaryButton}>Review Dashboard</button>
             </div>
 
+            {/* Administration Card - Added publishIcon */}
             <div style={styles.card}>
+              <img src={adminIcon} alt="Admin" style={styles.cardIcon} />
               <h3>Administration</h3>
               <p>Manage tracks, reviewers, and final program scheduling.</p>
               <button style={styles.darkButton}>Admin Panel</button>
             </div>
+            
           </div>
+        </div>
+        <div style={{ textAlign: 'center', marginTop: '40px', fontSize: '0.9rem', color: '#718096' }}>
+          Icons made by <a href="https://www.flaticon.com/authors/uniconlabs" title="Uniconlabs">Uniconlabs</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
         </div>
       </section>
     </div>
@@ -154,7 +169,13 @@ const styles = {
     cursor: 'pointer',
     fontWeight: '600',
     marginTop: '20px',
-  }
+  },
+  cardIcon: {
+    width: '100px', // Standardized icon size
+    height: '100px',
+    marginBottom: '20px',
+    objectFit: 'contain'
+  },
 };
 
 export default Home;

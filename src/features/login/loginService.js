@@ -1,7 +1,7 @@
 // features/login/loginService.js
 
 // This acts as your private "Auth" table (Matches your logic)
-const MOCK_AUTH_DB = [
+export let MOCK_AUTH_DB = [
   {
     email: "test.login@ara.ac.nz",
     password: "password123", // Internal use only for the mock sign-in
