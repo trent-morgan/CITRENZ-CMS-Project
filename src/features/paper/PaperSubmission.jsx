@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom'; // Added to handle the 'id' variable
+import { useParams, useNavigate } from 'react-router-dom'; // Added to handle the 'id' variable
 // Assuming MOCK_CONFERENCES is a named export in your file
 import { MOCK_CONFERENCES } from '../conference/ConferenceDetailPage'; 
 
@@ -11,11 +11,17 @@ const PaperSubmissionPage = () => {
   // Find the specific conference based on URL ID
   const conference = MOCK_CONFERENCES?.find(conf => conf.id === parseInt(id));
 
+  const navigate = useNavigate();
+  
+
   return (
     <div style={styles.pageWrapper}>
+      <div style={styles.pageWrapper}>
+        <button onClick={() => navigate(`/conference-detail/${id}`)} style={styles.backButton}>← Back to Conference</button>
+      </div>
       <div style={styles.titleRow}>
         <h1 style={styles.mainTitle}>
-           {conference ? `${conference.title} - Submission` : "Assessment 2 Hi-Fi Prototype Documentation"}
+           {conference ? `${conference.title} - Submission` : "Conference Not Found"}
         </h1>
       </div>
 
@@ -33,8 +39,11 @@ const PaperSubmissionPage = () => {
 
       {!showForm && (
         <>
+            <button style={styles.secondaryButton}>
+              Download template
+            </button>
             <button style={styles.addSubmissionBtn} onClick={() => setShowForm(true)}>
-            Add submission
+              Add submission
             </button>
 
             <section style={styles.statusSection}>
@@ -113,7 +122,10 @@ const PaperSubmissionPage = () => {
 
 const styles = {
   pageWrapper: {
-    padding: '3rem',
+    paddingLeft: '3rem',
+    paddingRight: '3rem',
+    paddingTop: '1rem',
+    paddingBottom: '2rem',
     backgroundColor: '#fff',
     color: '#333',
     fontFamily: "'Inter', system-ui, sans-serif",
@@ -126,10 +138,24 @@ const styles = {
     width: '100%',
     boxSizing: 'border-box',
   },
+  backButton: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    color: '#3182ce',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    fontWeight: '600',
+    alignItems: 'flex-start',
+  },
+  backButtonContainer: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    paddingBottom: '1rem',
+  },
   assignmentHeader: {
     width: '100%',
     boxSizing: 'border-box',
-    marginBottom: '30px',
+    marginBottom: '2rem',
     backgroundColor: '#f7fafc',
     display: 'flex',
     flexDirection: 'column',
@@ -137,6 +163,7 @@ const styles = {
     textAlign: 'left',
     padding: '20px',
     borderRadius: '12px',
+    
   },
   statusSection: {
     width: '100%',
@@ -176,6 +203,16 @@ const styles = {
     borderRadius: '8px',
     fontWeight: 'bold',
     cursor: 'pointer',
+  },
+  secondaryButton: {
+    backgroundColor: '#EDF2F7',
+    color: '#2D3748',
+    padding: '12px 24px',
+    border: 'none',
+    borderRadius: '8px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    marginBottom: '12px',
   },
   sectionTitle: {
     fontSize: '24px',

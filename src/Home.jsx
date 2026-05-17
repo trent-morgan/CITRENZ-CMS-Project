@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import heroBG from './assets/it_conference.jpg';
 import adminIcon from './assets/admin_icon.png';
 import reviewIcon from './assets/review_icon.png';
 import publishIcon from './assets/publish_icon.png';
-
 
 const Home = () => {
   const conferenceDetails = {
@@ -12,10 +11,22 @@ const Home = () => {
     deadline: "October 15, 2026",
   };
 
+  const [fadeIn, setFadeIn] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setFadeIn(true), 100); // slight delay for smoothness
+  }, []);
+
+
   return (
     <div style={styles.wrapper}>
       <header style={styles.heroSection}>
-        <div style={styles.content}>
+       <div style={{
+          ...styles.content,
+          ...styles.fadeIn,
+          opacity: fadeIn ? 1 : 0,
+          transform: fadeIn ? "translateY(0)" : "translateY(20px)"
+        }}>
           <h1 style={styles.title}>{conferenceDetails.title}</h1>
           <p style={styles.subtitle}>{conferenceDetails.subtitle}</p>
           <div style={styles.badge}>
@@ -176,6 +187,12 @@ const styles = {
     marginBottom: '20px',
     objectFit: 'contain'
   },
+  fadeIn: {
+    transition: "opacity 2.2s ease-out, transform 2.2s ease-out",
+    transform: "translateY(20px)",   // start slightly lower
+  },
+
+
 };
 
 export default Home;

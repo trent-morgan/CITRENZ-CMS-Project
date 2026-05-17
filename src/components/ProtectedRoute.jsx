@@ -1,13 +1,10 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import React from "react";
+import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children }) => {
-  // Replace this with your actual auth logic 
-  // (e.g., checking localStorage or a global state)
-  const isAuthenticated = localStorage.getItem('userLoggedIn') === 'true';
+  const user = localStorage.getItem("currentUser");
 
-  if (!isAuthenticated) {
-    // Redirect to login, but save the location they were trying to go to
+  if (!user) {
     return <Navigate to="/login" />;
   }
 

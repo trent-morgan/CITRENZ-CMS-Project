@@ -27,16 +27,24 @@ const LoginPage = () => {
     if (authError) {
       setError(authError.message);
     } else {
-      // 1. Store the user data in localStorage
+      // Save user profile
       localStorage.setItem('currentUser', JSON.stringify(data));
-      
-      // 2. Redirect to the admin panel
-      // If using react-router-dom: navigate('/admin');
-      // For a simple test:
-      window.location.href = '/admin'; 
+
+      // Mark user as logged in
+      localStorage.setItem('userLoggedIn', 'true');
+
+      // Redirect based on role
+      if (data.role === "Admin") {
+        navigate('/admin');
+      } else {
+        navigate('/profile');
+      }
     }
+
+
     setLoading(false);
   };
+
 
   return (
     <div style={styles.container}>

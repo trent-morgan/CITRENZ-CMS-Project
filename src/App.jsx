@@ -15,6 +15,7 @@ import LoginPage from './features/login/Login';
 import Register from './features/register/Register';
 import AdminPanel from './features/admin/AdminPanel';
 import Contact from './features/contact/Contact';
+import Profile from './features/profile/Profile';
 
 const AppContent = () => {
   const location = useLocation();
@@ -47,6 +48,16 @@ const AppContent = () => {
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/call-for-reviewers" element={<div style={styles.placeholder}>Call for Reviewers Coming Soon</div>} />
           <Route path="/call-for-papers" element={<div style={styles.placeholder}>Call for Papers Coming Soon</div>} />
+
+          <Route 
+            path="/profile" 
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+
           
           {/* Protected Route: Admin Panel */}
           <Route 

@@ -1,0 +1,19 @@
+type User @model @auth(rules: [{allow: public, provider: identityPool, operations: [create]},
+  {allow: owner, ownerField: "owner"}])
+{
+  email: String!
+  firstName: String
+  lastName: String
+  organization: String
+  role: String
+  bio: String
+  owner: String
+}
+
+type Paper @model @auth(rules: [{allow: owner, ownerField: "owner"}])
+{
+  title: String!
+  authors: String
+  abstract: String
+  status: String
+}

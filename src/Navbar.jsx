@@ -6,6 +6,10 @@ import profileImg from './assets/profile_icon.png';
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
+  const user = localStorage.getItem("currentUser");
+  const parsedUser = user ? JSON.parse(user) : null;
+  const [profileOpen, setProfileOpen] = useState(false);
+
   return (
     <nav style={styles.navbar}>
       <div style={styles.logoContainer}>
@@ -61,11 +65,47 @@ const Navbar = () => {
         </li>
       </ul>
 
-      <div style={styles.profileContainer}>
-        <Link to="/login" >
-          <img src={profileImg} alt="Profile Icon" style={styles.profileImage} />
-        </Link>
+      <div 
+        style={styles.profileContainer}
+        onClick={() => {
+          if (!parsedUser) {
+            window.location.href = "/login";   // logged out → go to login
+          } else {
+            setProfileOpen(!profileOpen);      // logged in → toggle dropdown
+          }
+        }}
+      >
+        {parsedUser && (
+          <span style={styles.userName}>
+            {parsedUser.first_name + " " + parsedUser.last_name}
+          </span>
+        )}
+
+        <img src={profileImg} alt="Profile Icon" style={styles.profileImage} />
+
+        {/* Dropdown */}
+        {parsedUser && profileOpen && (
+          <ul style={styles.profileDropdown}>
+            <li style={styles.dropdownItem}>
+              <Link to="/profile" style={styles.cleanLink}>Profile</Link>
+            </li>
+
+            <li style={styles.dropdownItemSeparator}></li>
+
+            <li 
+              style={styles.dropdownItem}
+              onClick={() => {
+                localStorage.removeItem("currentUser");
+                localStorage.removeItem("userLoggedIn");
+                window.location.href = "/login";
+              }}
+            >
+              Logout
+            </li>
+          </ul>
+        )}
       </div>
+
     </nav>
   );
 };
@@ -150,7 +190,7 @@ const styles = {
       cursor: 'pointer',
       // filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))', 
   },
-  profileContainer: { display: 'flex', alignItems: 'center', height: '100%' },
+  profileContainer: { display: 'flex', alignItems: 'center', height: '100%',cursor: 'pointer', },
   profileImage: { height: '45px', width: 'auto', display: 'block' },
   gradientLink: {
     textDecoration: 'none',
@@ -160,6 +200,27 @@ const styles = {
     backgroundImage: 'linear-gradient(to right, #48a1f4, #3e72b1)',
     padding: '8px 16px',
     borderRadius: '50px',
+  },
+  userName: {
+    color: "white",
+    marginLeft: "10px",
+    fontWeight: "600",
+    cursor: "pointer",
+    fontSize: "0.8rem",
+  },
+
+profileDropdown: {
+  position: "absolute",
+  top: '45px',         // Sits right below navbar
+  right: "0",
+  backgroundColor: "#ffffff",
+  minWidth: "150px",
+  boxShadow: "0 10px 15px rgba(0,0,0,0.1)",
+  borderRadius: "8px",
+  listStyle: "none",
+  padding: "10px 0",
+  border: "1px solid #E2E8F0",
+  zIndex: 2000,
   },
 };
 
