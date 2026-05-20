@@ -14,7 +14,7 @@ const Home = () => {
   const [fadeIn, setFadeIn] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setFadeIn(true), 100); // slight delay for smoothness
+    setTimeout(() => setFadeIn(true), 100); 
   }, []);
 
 
@@ -40,7 +40,6 @@ const Home = () => {
           <h2 style={styles.sectionHeading}>Portal Access</h2>
           <div style={styles.cardGrid}>
             
-            {/* Authors Card */}
             <div style={styles.card}>
               <img src={publishIcon} alt="Authors" style={styles.cardIcon} />
               <h3>Authors</h3>
@@ -48,7 +47,6 @@ const Home = () => {
               <button style={styles.primaryButton}>Submit Paper</button>
             </div>
 
-            {/* Reviewers Card - Added reviewIcon */}
             <div style={styles.card}>
               <img src={reviewIcon} alt="Reviewers" style={styles.cardIcon} />
               <h3>Reviewers</h3>
@@ -56,7 +54,6 @@ const Home = () => {
               <button style={styles.secondaryButton}>Review Dashboard</button>
             </div>
 
-            {/* Administration Card - Added publishIcon */}
             <div style={styles.card}>
               <img src={adminIcon} alt="Admin" style={styles.cardIcon} />
               <h3>Administration</h3>
@@ -182,14 +179,14 @@ const styles = {
     marginTop: '20px',
   },
   cardIcon: {
-    width: '100px', // Standardized icon size
+    width: '100px', 
     height: '100px',
     marginBottom: '20px',
     objectFit: 'contain'
   },
   fadeIn: {
     transition: "opacity 2.2s ease-out, transform 2.2s ease-out",
-    transform: "translateY(20px)",   // start slightly lower
+    transform: "translateY(20px)",   
   },
 
 

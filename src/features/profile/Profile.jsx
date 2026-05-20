@@ -22,7 +22,6 @@ const Profile = () => {
   return (
     <div style={styles.page}>
 
-        {/* HEADER WITH ICON + TITLE */}
         <div style={styles.header}>
         <img 
             src={profileImg}
@@ -32,7 +31,6 @@ const Profile = () => {
         <h1 style={styles.title}>{user.first_name} {user.last_name}</h1>
         </div>
 
-        {/* BORDERED CONTENT CONTAINER */}
         <div style={styles.container}>
 
         <div style={styles.detailRow}>
@@ -62,12 +60,12 @@ const Profile = () => {
 
 const styles = {
     profileImage: {
-        height: '150px',             // Made it slightly larger
+        height: '150px',             
         width: 'auto',
         display: 'block',
         backgroundColor: 'white',
-        padding: '8px 15px',        // More horizontal padding looks better
-        borderRadius: '50px',       // Fully rounded "pill" shape
+        padding: '8px 15px',       
+        borderRadius: '50px',       
     },
     header: {
         display: "flex",
@@ -77,17 +75,17 @@ const styles = {
     },
     detailRow: {
         display: "flex",
-        flexDirection: "column",   // ← stack label + value
+        flexDirection: "column",   
         padding: "12px 0",
         borderBottom: "1px solid #eee",
-        alignItems: "flex-start", // ← align to left
+        alignItems: "flex-start", 
     },
 
     label: {
-        fontWeight: "700",         // bold
-        fontSize: "0.9rem",        // slightly smaller
+        fontWeight: "700",         
+        fontSize: "0.9rem",        
         color: "#333",
-        marginBottom: "4px",       // spacing above value
+        marginBottom: "4px",       
     },
     value: {
         fontSize: "0.85rem",

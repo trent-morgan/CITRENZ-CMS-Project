@@ -15,10 +15,9 @@ const Footer = () => {
 const styles = {
   footer: {
     backgroundColor: '#f0f0f0',
-    // borderTop: '1px solid #949494',
     padding: '20px 40px',
     textAlign: 'center',
-    marginTop: 'auto', // Keeps it at the bottom of the flex wrapper
+    marginTop: 'auto',
   },
   copyright: {
     fontSize: '0.85rem',

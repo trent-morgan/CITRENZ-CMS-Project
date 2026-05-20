@@ -18,11 +18,9 @@ const ConferencesPage = () => {
   const [showOnlyOpen, setShowOnlyOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('quick');
   
-  // PAGINATION STATE
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // Reset to page 1 whenever filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedLocation, showOnlyOpen, activeTab]);
@@ -31,7 +29,6 @@ const ConferencesPage = () => {
     navigate(`/conference-detail/${id}`);
   };
 
-  // 1. Filter the list
   const filteredConferences = MOCK_CONFERENCES.filter(conf => {
     const matchesSearch = activeTab === 'quick' ? (
       conf.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -49,7 +46,6 @@ const ConferencesPage = () => {
     return matchesSearch && matchesLocation && matchesStatus;
   });
 
-  // 2. Paginate the filtered list
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentConferences = filteredConferences.slice(indexOfFirstItem, indexOfLastItem);
@@ -62,7 +58,6 @@ const ConferencesPage = () => {
       <h1 style={styles.mainTitle}>Conferences</h1>
 
       <div style={styles.mainContainer}>
-        {/* TABBED SEARCH CONTAINER */}
         <section style={styles.searchComponent}>
           <div style={styles.tabHeader}>
             <button 
@@ -122,7 +117,6 @@ const ConferencesPage = () => {
           </div>
         </section>
 
-        {/* BOTTOM SECTION: Content */}
         <main style={styles.contentArea}>
           <div style={styles.cardGrid}>
             {currentConferences.map(conf => (
@@ -146,7 +140,6 @@ const ConferencesPage = () => {
             <p style={styles.noResults}>No conferences found.</p>
           )}
 
-          {/* PAGINATION CONTROLS */}
           {totalPages > 1 && (
             <div style={styles.paginationContainer}>
               <button 
@@ -177,7 +170,6 @@ const ConferencesPage = () => {
 };
 
 const styles = {
-  // ... (previous styles kept for pageWrapper, mainTitle, searchComponent, tabs)
   pageWrapper: { display: 'flex', flexDirection: 'column', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', padding: '1rem', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' },
   mainTitle: { textAlign: 'center', margin: '1rem 0 2rem 0', fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', fontWeight: '700', color: '#2D3748' },
   mainContainer: { display: 'flex', flexDirection: 'column', gap: '2rem' },
@@ -202,7 +194,7 @@ const styles = {
     backgroundColor: '#f0f0f0',
     borderRadius: '15px',
     width: '100%',
-    padding: '20px 0', // Added padding top/bottom
+    padding: '20px 0', 
   },
     cardGrid: {
     display: 'flex',
@@ -228,7 +220,6 @@ const styles = {
   statusClosed: { backgroundColor: '#FED7D7', color: '#822727', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' },
   primaryButton: { padding: '10px 24px', backgroundColor: '#3182ce', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' },
   
-  // NEW PAGINATION STYLES
   paginationContainer: {
     display: 'flex',
     justifyContent: 'center',

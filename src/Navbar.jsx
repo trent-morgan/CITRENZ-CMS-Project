@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // Added useState
+import React, { useState } from 'react'; 
 import { Link } from 'react-router-dom';
 import logoImg from './assets/logo.png';
 import profileImg from './assets/profile_icon.png';
@@ -19,7 +19,6 @@ const Navbar = () => {
       </div>
 
       <ul style={styles.navLinks}>
-        {/* SERVICES DROPDOWN */}
         <li 
           style={styles.dropdownWrapper}
           onMouseEnter={() => setDropdownOpen(true)}
@@ -38,17 +37,10 @@ const Navbar = () => {
           {dropdownOpen && (
             <ul style={styles.dropdownMenu}>
               <li style={styles.dropdownItem}>
-                <Link to="/call-for-reviewers" style={styles.cleanLink}>My Conferences</Link>
+                <Link to="/my-conferences" style={styles.cleanLink}>My Conferences</Link>
               </li>
               <li style={styles.dropdownItem}>
-                <Link to="/call-for-reviewers" style={styles.cleanLink}>My Papers</Link>
-              </li>
-              <li style={styles.dropdownItem}>
-                <Link to="/call-for-papers" style={styles.cleanLink}>Review Panel</Link>
-              </li>
-              <li style={styles.dropdownItemSeparator}></li>
-              <li style={styles.dropdownItem}>
-                <Link to="/admin" style={{...styles.cleanLink, color: '#3182ce'}}>Admin Panel</Link>
+                <Link to="/my-papers" style={styles.cleanLink}>My Papers</Link>
               </li>
             </ul>
           )}
@@ -69,9 +61,9 @@ const Navbar = () => {
         style={styles.profileContainer}
         onClick={() => {
           if (!parsedUser) {
-            window.location.href = "/login";   // logged out → go to login
+            window.location.href = "/login";   
           } else {
-            setProfileOpen(!profileOpen);      // logged in → toggle dropdown
+            setProfileOpen(!profileOpen);      
           }
         }}
       >
@@ -83,7 +75,6 @@ const Navbar = () => {
 
         <img src={profileImg} alt="Profile Icon" style={styles.profileImage} />
 
-        {/* Dropdown */}
         {parsedUser && profileOpen && (
           <ul style={styles.profileDropdown}>
             <li style={styles.dropdownItem}>
@@ -111,7 +102,6 @@ const Navbar = () => {
 };
 
 const styles = {
-  // ... existing styles ...
   navbar: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -144,16 +134,15 @@ const styles = {
     fontSize: '0.6rem',
     transition: 'transform 0.2s ease',
   },
-  // NEW DROPDOWN STYLES
   dropdownWrapper: {
-    position: 'relative', // Critical for positioning the menu
-    height: '70px',       // Match navbar height
+    position: 'relative', 
+    height: '70px',       
     display: 'flex',
     alignItems: 'center',
   },
   dropdownMenu: {
     position: 'absolute',
-    top: '65px',         // Sits right below navbar
+    top: '65px',         
     left: '0',
     backgroundColor: '#ffffff',
     minWidth: '180px',
@@ -176,17 +165,16 @@ const styles = {
     backgroundColor: '#E2E8F0',
     margin: '5px 0',
   },
-  // ... existing styles ...
   cleanLink: { textDecoration: 'none', color: 'inherit' },
   logoContainer: { display: 'flex', alignItems: 'center', height: '100%' },
   logoImage: {
-      height: '30px',             // Made it slightly larger
+      height: '30px',             
       width: 'auto',
       display: 'block',
       backgroundColor: 'white',
-      padding: '8px 15px',        // More horizontal padding looks better
-      borderRadius: '50px',       // Fully rounded "pill" shape
-      transition: 'all 0.3s ease', // Smooth transition for the glow
+      padding: '8px 15px',        
+      borderRadius: '50px',       
+      transition: 'all 0.3s ease', 
       cursor: 'pointer',
       // filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))', 
   },
@@ -211,7 +199,7 @@ const styles = {
 
 profileDropdown: {
   position: "absolute",
-  top: '45px',         // Sits right below navbar
+  top: '45px',         
   right: "0",
   backgroundColor: "#ffffff",
   minWidth: "150px",

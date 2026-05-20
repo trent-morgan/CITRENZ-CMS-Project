@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // Added to handle the 'id' variable
-// Assuming MOCK_CONFERENCES is a named export in your file
+import { useParams, useNavigate } from 'react-router-dom'; 
 import { MOCK_CONFERENCES } from '../conference/ConferenceDetailPage'; 
 
 const PaperSubmissionPage = () => {
-  const { id } = useParams(); // Retrieves the ID from the URL path
+  const { id } = useParams(); 
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
-  // Find the specific conference based on URL ID
   const conference = MOCK_CONFERENCES?.find(conf => conf.id === parseInt(id));
 
   const navigate = useNavigate();
@@ -71,7 +69,6 @@ const PaperSubmissionPage = () => {
             </section>
         </>
         )}
-      {/* Actual Form Container */}
       {showForm && (
         <main style={styles.contentContainer}>
           <section style={styles.submissionFormBlock}>

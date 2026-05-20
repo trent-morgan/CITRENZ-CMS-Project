@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { signIn } from './loginService'; // Ensure this path matches your file structure
+import { signIn } from './loginService'; 
 import logoImg from '../../assets/logo.png';
-import { useNavigate, Link } from 'react-router-dom'; // Add this
+import { useNavigate, Link } from 'react-router-dom'; 
 
 
 
@@ -13,10 +13,9 @@ const LoginPage = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (error) setError(null); // Clear error when user types
+    if (error) setError(null); 
   };
 
-  // inside LoginPage.jsx
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -27,13 +26,10 @@ const LoginPage = () => {
     if (authError) {
       setError(authError.message);
     } else {
-      // Save user profile
       localStorage.setItem('currentUser', JSON.stringify(data));
 
-      // Mark user as logged in
       localStorage.setItem('userLoggedIn', 'true');
 
-      // Redirect based on role
       if (data.role === "Admin") {
         navigate('/admin');
       } else {
@@ -103,7 +99,7 @@ const LoginPage = () => {
           <p style={styles.footer}>
           Don't have an account?{' '}
           <span 
-            onClick={() => navigate('/register')} // Update this path to match your App.js route
+            onClick={() => navigate('/register')} 
             style={{ ...styles.link, cursor: 'pointer' }}
           >
             Sign-up

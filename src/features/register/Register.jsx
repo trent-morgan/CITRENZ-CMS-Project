@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { signUp } from './registerService'; // Logic moved here
+import { signUp } from './registerService'; 
 import logoImg from '../../assets/logo.png';
-import { Link } from 'react-router-dom'; // Add this
+import { Link } from 'react-router-dom'; 
 
 
 const RegistrationPage = () => {
-  // 1. Updated state to include all fields required by registerService
   const [formData, setFormData] = useState({ 
     fullName: '', 
     email: '', 
@@ -25,14 +24,18 @@ const RegistrationPage = () => {
     setLoading(true);
     setError(null);
 
-    // 2. Pass the entire formData object to signUp
     const { data, error: authError } = await signUp(formData);
 
     if (authError) {
       setError(authError.message);
     } else {
       localStorage.setItem('currentUser', JSON.stringify(data));
-      window.location.href = '/admin'; 
+
+      if (data.role === 'admin') {
+        window.location.href = '/admin';
+      } else {
+        window.location.href = '/dashboard'; 
+      }
     }
     setLoading(false);
   };
@@ -49,14 +52,12 @@ const RegistrationPage = () => {
         <form onSubmit={handleSubmit}>
           {error && <div style={styles.errorBanner}>{error}</div>}
 
-          {/* New Full Name Field */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>Full Name</label>
             <input
               name="fullName"
               type="text"
               style={styles.input}
-              placeholder="Trent Morgan"
               onChange={handleChange}
               value={formData.fullName}
               required
@@ -69,21 +70,18 @@ const RegistrationPage = () => {
               name="email"
               type="email"
               style={styles.input}
-              placeholder="name@institution.ac.nz"
               onChange={handleChange}
               value={formData.email}
               required
             />
           </div>
 
-          {/* New Institution Field */}
           <div style={styles.inputGroup}>
             <label style={styles.label}>Institution</label>
             <input
               name="institution"
               type="text"
               style={styles.input}
-              placeholder="e.g. Ara Institute"
               onChange={handleChange}
               value={formData.institution}
               required
@@ -96,7 +94,6 @@ const RegistrationPage = () => {
               name="password"
               type="password"
               style={styles.input}
-              placeholder="••••••••"
               onChange={handleChange}
               value={formData.password}
               required

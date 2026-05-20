@@ -11,17 +11,13 @@ export const MOCK_CONFERENCES = [
     description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit nec nisl sit amet tristique. Nunc eu mollis odio. Integer vehicula, ex a semper vestibulum, arcu lacus dignissim nisl, at iaculis tortor est semper nulla. Mauris laoreet nec lorem quis tempus. Sed nec ornare justo. Nulla facilisi. Aenean id ultrices magna. Mauris quis lacus tincidunt, commodo nibh non, tincidunt velit. In sed ante ante. Donec convallis, orci nec mattis tristique, dui nulla sodales quam, et malesuada velit metus at nulla. Integer id orci risus. Nullam placerat nunc lacus, et consectetur quam pulvinar ac. Maecenas id sem quis sem vehicula luctus. Curabitur quis orci ultricies ante malesuada posuere. Donec a nulla nec nulla tincidunt vulputate. Etiam fermentum tristique augue.',
     importantDates: [
       { label: 'Paper Submission Deadline', date: 'July 15, 2026' },
-      { label: 'Notification of Acceptance', date: 'August 20, 2026' },
-      { label: 'Camera Ready Paper Due', date: 'September 10, 2026' },
       { label: 'Conference Begins', date: 'October 12, 2026' }
     ],
     keyInfo: {
-      format: 'Hybrid (In-person & Online)',
-      tracks: 'AI, Cybersecurity, Software Eng, IT Ed',
+      themes: 'AI Integration in IT Deployment',
       contact: 'admin@citrenz.ac.nz'
     }
   },
-  // ... other mock items can follow this structure
 ];
 
 const ConferenceDetailPage = () => {
@@ -55,7 +51,6 @@ const ConferenceDetailPage = () => {
       </header>
 
       <div style={styles.layoutGrid}>
-        {/* LEFT COLUMN: Main Description & Action */}
         <main style={styles.mainContent}>
           <section style={styles.section}>
             <h2 style={styles.subTitle}>About this Conference</h2>
@@ -70,7 +65,6 @@ const ConferenceDetailPage = () => {
           </div>
         </main>
 
-        {/* RIGHT COLUMN: Key Dates & Info Sidebar */}
         <aside style={styles.sidebar}>
           <div style={styles.sidebarCard}>
             <h3 style={styles.sidebarTitle}>📅 Important Dates</h3>
@@ -85,10 +79,7 @@ const ConferenceDetailPage = () => {
           <div style={styles.sidebarCard}>
             <h3 style={styles.sidebarTitle}>ℹ️ Key Information</h3>
             <div style={styles.infoRow}>
-              <strong>Format:</strong> {conference.keyInfo.format}
-            </div>
-            <div style={styles.infoRow}>
-              <strong>Tracks:</strong> {conference.keyInfo.tracks}
+              <strong>Theme:</strong> {conference.keyInfo.themes}
             </div>
             <div style={styles.infoRow}>
               <strong>Venue:</strong> {conference.location}
@@ -205,16 +196,14 @@ const styles = {
     fontWeight: 'bold',
     cursor: 'pointer',
   },
-  // ... existing pageWrapper, mainTitle, status styles ...
   
   layoutGrid: {
     display: 'grid',
-    gridTemplateColumns: '1fr 350px', // Creates the sidebar look
+    gridTemplateColumns: '1fr 350px', 
     gap: '40px',
     alignItems: 'start',
   },
   
-  // Sidebar styling
   sidebar: {
     display: 'flex',
     flexDirection: 'column',
@@ -234,13 +223,12 @@ const styles = {
     paddingBottom: '8px',
   },
   
-  // Date List Styling
   dateItem: {
     display: 'flex',
     flexDirection: 'column',
     marginBottom: '12px',
     paddingLeft: '10px',
-    borderLeft: '3px solid #3182ce', // Timeline "strip" effect
+    borderLeft: '3px solid #3182ce', 
   },
   dateLabel: {
     fontSize: '0.8rem',
@@ -265,7 +253,6 @@ const styles = {
     fontSize: '0.9rem',
   },
 
-  // Adjustments for mobile
   '@media (max-width: 850px)': {
     layoutGrid: {
       gridTemplateColumns: '1fr',

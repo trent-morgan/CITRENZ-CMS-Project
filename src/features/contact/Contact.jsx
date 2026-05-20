@@ -6,12 +6,10 @@ const Contact = () => {
 
   return (
     <div style={styles.pageWrapper}>
-        {/* 1. Centered Header at the very top */}
         <h1 style={styles.mainTitle}>Contact Us</h1>
         <p className="info">Have questions about CITRENZ CMS? Reach out and send us a message!</p>
 
         <div style={styles.mainContainer}>
-            {/* RIGHT SIDE: Content (80%) */}
 
             <main style={styles.contentArea}>
                 <label style={styles.label}>
@@ -103,24 +101,24 @@ const styles = {
         flexDirection: 'column',
         minHeight: '100vh',
         fontFamily: 'system-ui, sans-serif',
-        padding: '1rem 1rem', // Reduced side padding for mobile
-        maxWidth: '1200px',   // 🔥 Prevents drifting too far apart on big screens
-        margin: '0 auto',      // 🔥 Centers the whole app on the screen
+        padding: '1rem 1rem', 
+        maxWidth: '1200px',   
+        margin: '0 auto',      
         width: '100%',
         boxSizing: 'border-box',
     },
     mainTitle: {
         textAlign: 'center',
         margin: '1rem 0',
-        fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', // Scales font size based on screen width
+        fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', 
         fontWeight: '700',
         color: '#2D3748',
     },
     mainContainer: {
         display: 'flex',
         flexDirection: 'row',
-        flexWrap: 'wrap', // 🔥 Allows sidebar to drop below content on very small screens
-        gap: '2rem',      // Adds consistent spacing between sidebar and content
+        flexWrap: 'wrap', 
+        gap: '2rem',      
         marginTop: '1rem',
     },
     sidebar: {
@@ -129,8 +127,8 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         gap: '20px',
-        alignItems: 'flex-start', // 🔥 Change from 'center' to 'flex-start'
-        textAlign: 'left',        // 🔥 Change from 'center' to 'left'
+        alignItems: 'flex-start', 
+        textAlign: 'left',        
         paddingLeft: '30px',
     },
     contactDetail: {
@@ -144,11 +142,10 @@ const styles = {
         color: '#3a3a3a'
     },
     link: {
-        color: '#2E92C4',          // Matches your label color
-        textDecoration: 'none',    // Removes the underline
+        color: '#2E92C4',          
+        textDecoration: 'none',   
         fontWeight: '500',
     },
-// Optional: If you want it to change color when hovered (requires CSS or state)
     contentArea: {
         backgroundColor: '#f0f0f0',
         paddingLeft: '40px',
@@ -178,24 +175,24 @@ const styles = {
         padding: '12px',
     },
     messageInput: {
-        minHeight: '150px',       // Use height instead of padding to make it big
+        minHeight: '150px',       
         borderRadius: '6px',
         border: '1px solid #cbd5e0',
         width: '100%',
         boxSizing: 'border-box',
-        padding: '12px',          // Normal padding keeps the cursor at the top-left
-        fontFamily: 'inherit',    // Textareas don't always inherit font by default
-        resize: 'vertical',       // Allows the user to stretch the box vertically
+        padding: '12px',          
+        fontFamily: 'inherit',   
+        resize: 'vertical',      
     },
     separator: {
         border: '0',
         height: '1px',
-        background: '#cbd5e0',/* A light gray to match your label color */
-        margin: '20px 0',      /* Adds space above and below the line */
+        background: '#cbd5e0',
+        margin: '20px 0',      
         width: '100%',
     },
     required: {
-    color: '#E53E3E', // A clear red color
+    color: '#E53E3E', 
     marginLeft: '4px',
     },
 };
