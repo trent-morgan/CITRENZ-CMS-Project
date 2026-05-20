@@ -1,45 +1,32 @@
-export let MOCK_AUTH_DB = [
-  {
-    email: "test.login@ara.ac.nz",
-    password: "password123", 
-    profile: {
-      id: "550e8400-e29b-41d4-a716-446655440000", 
-      email: "test.login@ara.ac.nz",               
-      first_name: "Trent",                         
-      last_name: "Morgan",                       
-      organization: "Ara Institute of Canterbury", 
-      role: "Student",                           
-      bio: "Final-year BICT student at Ara specializing in software development and CITRENZ systems."
-    }
-  },
-  {
-    email: "admin@citrenz.org",
-    password: "admin123", 
-    profile: {
-      id: "f47ac10b-58cc-4372-a567-0e02b2c3d479", 
-      email: "admin@citrenz.org",                 
-      first_name: "Ad",                        
-      last_name: "Min",                         
-      organization: "CITRENZ Organization",      
-      role: "Admin",                              
-      bio: "Lead administrator for the CITRENZ Conference Management System. Responsible for overseeing paper submissions and reviewer assignments." 
-    }
-  }
-];
+import { auth, db } from "../../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { ref, get } from "firebase/database";
 
 export const signIn = async (email, password) => {
-  await new Promise((resolve) => setTimeout(resolve, 800));
+  try {
+    // 1. Sign in using Firebase Auth
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-  const account = MOCK_AUTH_DB.find(
-    (a) => a.email === email && a.password === password
-  );
+    // 2. Fetch the user's profile from Realtime Database
+    const profileRef = ref(db, `user/${user.uid}`);
+    const snapshot = await get(profileRef);
 
-  if (account) {
-    return { data: account.profile, error: null };
+    if (!snapshot.exists()) {
+      return {
+        data: null,
+        error: { message: "User profile not found in database." }
+      };
+    }
+
+    const profile = snapshot.val();
+
+    return { data: profile, error: null };
+
+  } catch (error) {
+    return {
+      data: null,
+      error: { message: "Invalid email or password. Please try again." }
+    };
   }
-
-  return { 
-    data: null, 
-    error: { message: "Invalid email or password. Please try again." } 
-  };
 };

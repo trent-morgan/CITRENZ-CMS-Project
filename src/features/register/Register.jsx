@@ -5,12 +5,14 @@ import { Link } from 'react-router-dom';
 
 
 const RegistrationPage = () => {
-  const [formData, setFormData] = useState({ 
-    fullName: '', 
-    email: '', 
-    institution: '', 
-    password: '' 
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -24,6 +26,13 @@ const RegistrationPage = () => {
     setLoading(true);
     setError(null);
 
+    // 🔥 Password match check goes here
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
+    }
+
     const { data, error: authError } = await signUp(formData);
 
     if (authError) {
@@ -34,11 +43,13 @@ const RegistrationPage = () => {
       if (data.role === 'admin') {
         window.location.href = '/admin';
       } else {
-        window.location.href = '/dashboard'; 
+        window.location.href = '/profile';
       }
     }
+
     setLoading(false);
   };
+
 
   return (
     <div style={styles.container}>
@@ -53,13 +64,24 @@ const RegistrationPage = () => {
           {error && <div style={styles.errorBanner}>{error}</div>}
 
           <div style={styles.inputGroup}>
-            <label style={styles.label}>Full Name</label>
+            <label style={styles.label}>First Name</label>
             <input
-              name="fullName"
+              name="firstName"
               type="text"
               style={styles.input}
               onChange={handleChange}
-              value={formData.fullName}
+              value={formData.firstName}
+              required
+            />
+          </div>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Last Name</label>
+            <input
+              name="lastName"
+              type="text"
+              style={styles.input}
+              onChange={handleChange}
+              value={formData.lastName}
               required
             />
           </div>
@@ -77,18 +99,6 @@ const RegistrationPage = () => {
           </div>
 
           <div style={styles.inputGroup}>
-            <label style={styles.label}>Institution</label>
-            <input
-              name="institution"
-              type="text"
-              style={styles.input}
-              onChange={handleChange}
-              value={formData.institution}
-              required
-            />
-          </div>
-
-          <div style={styles.inputGroup}>
             <label style={styles.label}>Password</label>
             <input
               name="password"
@@ -96,6 +106,18 @@ const RegistrationPage = () => {
               style={styles.input}
               onChange={handleChange}
               value={formData.password}
+              required
+            />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Confirm Password</label>
+            <input
+              name="confirmPassword"
+              type="password"
+              style={styles.input}
+              onChange={handleChange}
+              value={formData.confirmPassword}
               required
             />
           </div>

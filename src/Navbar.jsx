@@ -60,21 +60,37 @@ const Navbar = () => {
       <div 
         style={styles.profileContainer}
         onClick={() => {
-          if (!parsedUser) {
-            window.location.href = "/login";   
-          } else {
-            setProfileOpen(!profileOpen);      
-          }
+          if (!parsedUser) return; // only toggle if logged in
+          setProfileOpen(!profileOpen);
         }}
       >
-        {parsedUser && (
-          <span style={styles.userName}>
-            {parsedUser.first_name + " " + parsedUser.last_name}
-          </span>
+        {/* Logged OUT state */}
+        {!parsedUser && (
+          <Link to="/login" style={styles.cleanLink}>
+            <img src={profileImg} alt="Login" style={styles.profileImage} />
+          </Link>
         )}
 
-        <img src={profileImg} alt="Profile Icon" style={styles.profileImage} />
+        {/* Logged IN state */}
+        {parsedUser && (
+          <>
+            <span style={styles.userName}>
+              {parsedUser.first_name + " " + parsedUser.last_name}
+            </span>
+            <img src={profileImg} alt="Profile Icon" style={styles.profileImage} />
 
+            <span
+              style={{
+                ...styles.arrow,
+                transform: profileOpen ? "rotate(180deg)" : "rotate(0deg)"
+              }}
+            >
+              ▼
+            </span>
+          </>
+        )}
+
+        {/* Dropdown */}
         {parsedUser && profileOpen && (
           <ul style={styles.profileDropdown}>
             <li style={styles.dropdownItem}>
@@ -96,7 +112,6 @@ const Navbar = () => {
           </ul>
         )}
       </div>
-
     </nav>
   );
 };
@@ -133,6 +148,7 @@ const styles = {
   arrow: {
     fontSize: '0.6rem',
     transition: 'transform 0.2s ease',
+    color: '#ffffff',   // ← this keeps it white
   },
   dropdownWrapper: {
     position: 'relative', 
