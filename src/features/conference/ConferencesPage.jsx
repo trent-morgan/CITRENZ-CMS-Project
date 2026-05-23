@@ -1,26 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-export const MOCK_CONFERENCES = [
-  { id: 1, title: 'CITRENZ Annual Conference 2026', location: 'Christchurch', date: 'Oct 12-14, 2026', status: 'Open' },
-  { id: 2, title: 'North Island IT Educators Workshop', location: 'Auckland', date: 'Nov 05, 2026', status: 'Open' },
-  { id: 3, title: 'South Island Computing Symposium', location: 'Dunedin', date: 'Dec 01, 2026', status: 'Open' },
-  { id: 4, title: 'Future of Tech Education Summit', location: 'Wellington', date: 'Jan 20, 2027', status: 'Closed' },
-  { id: 5, title: 'Cybersecurity in NZ Schools', location: 'Hamilton', date: 'Feb 15, 2027', status: 'Open' },
-  { id: 6, title: 'AI Integration in Tertiary Ed', location: 'Nelson', date: 'March 10, 2027', status: 'Open' },
-  { id: 7, title: 'Cloud Computing Workshop', location: 'Napier', date: 'April 05, 2027', status: 'Closed' },
-];
+import { getConferences } from "./conferenceService";   // ⭐ NEW
 
 const ConferencesPage = () => {
   const navigate = useNavigate();
+
+  const [conferences, setConferences] = useState([]);   // ⭐ NEW
+  const [loading, setLoading] = useState(true);         // ⭐ NEW
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [showOnlyOpen, setShowOnlyOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('quick');
-  
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
+  const [selectedConference, setSelectedConference] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = (conf) => {
+    setSelectedConference(conf);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setSelectedConference(null);
+    setShowModal(false);
+  };
+
+
+  // ⭐ Load conferences from Firebase
+  useEffect(() => {
+    async function load() {
+      const data = await getConferences();
+      setConferences(data);
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  // Reset pagination when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, selectedLocation, showOnlyOpen, activeTab]);
@@ -29,29 +49,46 @@ const ConferencesPage = () => {
     navigate(`/conference-detail/${id}`);
   };
 
-  const filteredConferences = MOCK_CONFERENCES.filter(conf => {
-    const matchesSearch = activeTab === 'quick' ? (
-      conf.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      conf.location.toLowerCase().includes(searchTerm.toLowerCase())
-    ) : true;
+  // ⭐ Replace MOCK_CONFERENCES with real data
+  const filteredConferences = conferences.filter(conf => {
+    const title = (conf.title || "").toLowerCase();
+    const location = (conf.location || "").toLowerCase();
+    const search = searchTerm.toLowerCase();
 
-    const matchesLocation = activeTab === 'advanced' && selectedLocation !== 'All Locations' ? (
-      conf.location === selectedLocation
-    ) : true;
+    // ⭐ Only show confirmed conferences
+    const isConfirmed = conf.reviewStatus === "confirmed";
 
-    const matchesStatus = activeTab === 'advanced' && showOnlyOpen ? (
-      conf.status === 'Open'
-    ) : true;
+    const matchesSearch =
+      activeTab === 'quick'
+        ? title.includes(search) || location.includes(search)
+        : true;
 
-    return matchesSearch && matchesLocation && matchesStatus;
+    const matchesLocation =
+      activeTab === 'advanced' && selectedLocation !== 'All Locations'
+        ? conf.location === selectedLocation
+        : true;
+
+    const matchesStatus =
+      activeTab === 'advanced' && showOnlyOpen
+        ? conf.status === 'Open'
+        : true;
+
+    return isConfirmed && matchesSearch && matchesLocation && matchesStatus;
   });
+
+
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentConferences = filteredConferences.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredConferences.length / itemsPerPage);
 
-  const locations = ['All Locations', ...new Set(MOCK_CONFERENCES.map(c => c.location))];
+  // ⭐ Build locations list from real data
+  const locations = ['All Locations', ...new Set(conferences.map(c => c.location))];
+
+  if (loading) {
+    return <p style={{ padding: 20 }}>Loading conferences…</p>;
+  }
 
   return (
     <div style={styles.pageWrapper}>
@@ -126,7 +163,7 @@ const ConferencesPage = () => {
                     {conf.status}
                   </span>
                   <h3 style={styles.cardTitle}>{conf.title}</h3>
-                  <p style={styles.details}>{conf.location} • {conf.date}</p>
+                  <p style={styles.details}>{conf.location} • {conf.startDate} {conf.startTime}</p>
                 </div>
                 <button style={styles.primaryButton} 
                   onClick={() => handleViewDetail(conf.id)}>
@@ -174,13 +211,13 @@ const styles = {
   mainTitle: { textAlign: 'center', margin: '1rem 0 2rem 0', fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', fontWeight: '700', color: '#2D3748' },
   mainContainer: { display: 'flex', flexDirection: 'column', gap: '2rem' },
   
-  searchComponent: { backgroundColor: '#133860', borderRadius: '15px', overflow: 'hidden' },
+  searchComponent: { backgroundColor: '#133860', borderRadius: '15px', overflow: 'hidden', width: '100%' },
   tabHeader: { display: 'flex', width: '100%', borderBottom: '1px solid #a0aec0'},
   tabActive: { flex: 1, padding: '1.5rem 1rem', backgroundColor: 'transparent', color: '#1a202c', border: 'none', borderBottom: '4px solid #58a5cc', cursor: 'pointer', fontWeight: '700', fontSize: '1rem', color: '#FFFFFF' },
   tabInactive: { flex: 1, padding: '1.5rem 1rem', backgroundColor: 'transparent', color: '#4A5568', border: 'none', borderBottom: '4px solid transparent', cursor: 'pointer', fontWeight: '600', fontSize: '1rem',color: '#ffffffad'},
-  tabContent: { padding: '2.5rem 2rem', height: '80px' },
+  tabContent: { padding: '1.25rem 1rem', height: '80px' },
   inputContainer: { display: 'flex', justifyContent: 'center' },
-  searchInputTabbed: { padding: '1.2rem 1.5rem', borderRadius: '8px', border: '1px solid #a0aec0', width: '100%', maxWidth: '900px', backgroundColor: 'white', fontSize: '1rem' },
+  searchInputTabbed: { padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #a0aec0', width: '100%', maxWidth: '900px', backgroundColor: 'white', fontSize: '1rem' },
   
   advancedFiltersGroup: { display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' },
   filterGroupInline: { display: 'flex', flexDirection: 'column', gap: '10px', flex: '1 1 300px', maxWidth: '400px' },
@@ -189,6 +226,7 @@ const styles = {
   advancedCheckboxContainer: { display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', height: '52px', backgroundColor: 'white', padding: '0 1rem', borderRadius: '8px', border: '1px solid #a0aec0' },
   checkbox: { width: '18px', height: '18px' },
   filterLabelTabbed: { fontSize: '0.95rem', color: '#2D3748' },
+  
 
   contentArea: {
     backgroundColor: '#f0f0f0',

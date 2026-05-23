@@ -37,10 +37,11 @@ const Navbar = () => {
           {dropdownOpen && (
             <ul style={styles.dropdownMenu}>
               <li style={styles.dropdownItem}>
-                <Link to="/my-conferences" style={styles.cleanLink}>My Conferences</Link>
+                <Link to="/dashboard" style={styles.cleanLink}>Dashboard</Link>
               </li>
+              <li style={styles.dropdownItemSeparator}></li>
               <li style={styles.dropdownItem}>
-                <Link to="/my-papers" style={styles.cleanLink}>My Papers</Link>
+                <Link to="/conference-creation" style={styles.cleanLink}>Create Conference</Link>
               </li>
             </ul>
           )}

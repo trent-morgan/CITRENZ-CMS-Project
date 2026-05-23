@@ -30,7 +30,7 @@ const LoginPage = () => {
 
       localStorage.setItem('userLoggedIn', 'true');
 
-      if (data.role === "Admin") {
+      if (data.role === "admin") {
         navigate('/admin');
       } else {
         navigate('/profile');

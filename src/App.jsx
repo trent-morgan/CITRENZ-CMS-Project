@@ -1,20 +1,22 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
-import ProtectedRoute from './components/ProtectedRoute'; 
-
+import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import Home from './Home';
 import AboutUs from './AboutUs';
 import ConferencesPage from './features/conference/ConferencesPage';
 import ConferenceDetailPage from './features/conference/ConferenceDetailPage';
+import ConferenceCreation from './features/conference/ConferenceCreation';
 import PaperSubmission from './features/paper/PaperSubmission';
 import LoginPage from './features/login/Login';
 import Register from './features/register/Register';
 import AdminPanel from './features/admin/AdminPanel';
 import Contact from './features/contact/Contact';
 import Profile from './features/profile/Profile';
+import Dashboard from './features/dashboard/Dashboard';
+
 
 const AppContent = () => {
   const location = useLocation();
@@ -32,7 +34,6 @@ const AppContent = () => {
           <Route path="/" element={<Home />} />
           <Route path="/conferences" element={<ConferencesPage />} />
           <Route path="/conference-detail/:id" element={<ConferenceDetailPage />} /> 
-          
           <Route 
             path="/paper-submission/:id" 
             element={
@@ -40,11 +41,16 @@ const AppContent = () => {
                 <PaperSubmission />
               </ProtectedRoute>
             } 
-          />            
-          
+          />        
           <Route path="/about-us" element={<AboutUs />} />
-          <Route path="/my-conferences" element={<div style={styles.placeholder}>Conference Dashboard Coming Soon</div>} />
-          <Route path="/my-papers" element={<div style={styles.placeholder}>Papers Dashboard Coming Soon</div>} />
+          <Route path="/dashboard" element={
+            <ProtectedRoute>
+                <Dashboard />
+            </ProtectedRoute>} />
+          <Route path="/conference-creation" element={
+            <ProtectedRoute>
+              <ConferenceCreation />
+            </ProtectedRoute>} />
 
           <Route 
             path="/profile" 

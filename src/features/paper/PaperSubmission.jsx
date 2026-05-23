@@ -14,7 +14,7 @@ const PaperSubmissionPage = () => {
 
   return (
     <div style={styles.pageWrapper}>
-      <div style={styles.pageWrapper}>
+      <div style={styles.backButtonContainer}>
         <button onClick={() => navigate(`/conference-detail/${id}`)} style={styles.backButton}>← Back to Conference</button>
       </div>
       <div style={styles.titleRow}>
@@ -191,6 +191,10 @@ const styles = {
   instructions: {
     fontSize: '16px',
     marginBottom: '25px',
+  },
+  backButtonContainer: {
+    paddingBottom: '40px',
+    paddingTop: '40px',
   },
   addSubmissionBtn: {
     backgroundColor: '#3182ce',
