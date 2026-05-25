@@ -22,9 +22,6 @@ export async function getMyConferences(userEmail) {
   }
 }
 
-// -------------------------------
-// Fetch papers for the user
-// -------------------------------
 export async function getMyPapers(userEmail) {
   try {
     const snapshot = await get(ref(db, "paper"));
@@ -40,4 +37,32 @@ export async function getMyPapers(userEmail) {
     console.error("DashboardService.getMyPapers:", err);
     return [];
   }
+}
+
+export async function getMyRegistrations(userId) {
+  const regRef = ref(db, `registrations`);
+  const snapshot = await get(regRef);
+
+  if (!snapshot.exists()) return [];
+
+  const allRegs = snapshot.val();
+  const registeredConfIds = [];
+
+  // Find all conferences where this user is registered
+  for (const confId in allRegs) {
+    if (allRegs[confId][userId]) {
+      registeredConfIds.push(confId);
+    }
+  }
+
+  // Fetch conference details
+  const conferences = [];
+  for (const confId of registeredConfIds) {
+    const confSnap = await get(ref(db, `conference/${confId}`));
+    if (confSnap.exists()) {
+      conferences.push({ id: confId, ...confSnap.val() });
+    }
+  }
+
+  return conferences;
 }

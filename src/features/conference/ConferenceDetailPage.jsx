@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
-import { ref, get } from "firebase/database";
+import { ref, get, set } from "firebase/database";
 import profileImg from '../../assets/profile_icon.png';
 import { getUserByEmail } from "./conferenceService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -21,6 +21,8 @@ const ConferenceDetailPage = () => {
   const [conference, setConference] = useState(null);
   const [loading, setLoading] = useState(true);
   const [creator, setCreator] = useState(null);
+  const [isRegistered, setIsRegistered] = useState(false);
+
 
 
   useEffect(() => {
@@ -61,6 +63,25 @@ const ConferenceDetailPage = () => {
     return () => unsubscribe();
   }, [conference]);
 
+  useEffect(() => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) return;
+
+    async function checkRegistration() {
+      const regRef = ref(db, `registrations/${id}/${user.uid}`);
+      const snapshot = await get(regRef);
+
+      if (snapshot.exists()) {
+        setIsRegistered(true);
+      }
+    }
+
+    checkRegistration();
+  }, [id]);
+
+
 
 
 
@@ -78,6 +99,43 @@ const ConferenceDetailPage = () => {
       </div>
     );
   }
+
+ const handleRegister = async () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      alert("You must be logged in to register.");
+      return;
+    }
+
+    try {
+      const regRef = ref(db, `registrations/${id}/${user.uid}`);
+
+      // Check if already registered
+      const regCheck = await get(regRef);
+      if (regCheck.exists()) {
+        alert("You are already registered for this conference.");
+        setIsRegistered(true);
+        return;
+      }
+
+      // Register
+      await set(regRef, {
+        userId: user.uid,
+        email: user.email,
+        registeredAt: Date.now()
+      });
+
+      setIsRegistered(true);
+      alert("You are now registered for this conference!");
+    } catch (err) {
+      console.error("REGISTRATION ERROR:", err);
+      alert("Failed to register.");
+    }
+  };
+
+
 
   return (
     <div style={styles.pageWrapper}>
@@ -123,7 +181,13 @@ const ConferenceDetailPage = () => {
             >
               Submit a Paper
             </button>
-            <button style={styles.secondaryButton}>Register to Attend</button>
+            <button
+              onClick={handleRegister}
+              style={styles.secondaryButton}
+              disabled={isRegistered}
+            >
+              {isRegistered ? "Registered ✓" : "Register to Attend"}
+            </button>
           </div>
         </main>
 

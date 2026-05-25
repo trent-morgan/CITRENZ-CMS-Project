@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { getMyConferences, getMyPapers } from "./dashboardService";
+import { getMyConferences, getMyPapers, getMyRegistrations } from "./dashboardService";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const [myConferences, setMyConferences] = useState([]);
-  const [myPapers, setMyPapers] = useState([]);
-  const navigate = useNavigate();
+    const [myConferences, setMyConferences] = useState([]);
+    const [myPapers, setMyPapers] = useState([]);
+    const [registeredConferences, setRegisteredConferences] = useState([]);
+    const [isRegistered, setIsRegistered] = useState(false);
+
+
+    const navigate = useNavigate();
 
     const [selectedConference, setSelectedConference] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -28,13 +32,22 @@ const Dashboard = () => {
         async function loadData() {
             const confs = await getMyConferences(user.email);
             const papers = await getMyPapers(user.email);
+            const regs = await getMyRegistrations(user.id); // ⭐ NEW
 
-            setMyConferences(confs);
+            // Merge created + registered
+            const merged = [
+            ...confs.map(c => ({ ...c, _type: "created" })),
+            ...regs.map(c => ({ ...c, _type: "registered" }))
+            ];
+
+            setMyConferences(merged);
             setMyPapers(papers);
         }
 
         loadData();
     }, []);
+
+
 
     // ⭐ FIX: compute upcoming/past here
     const today = new Date();
@@ -48,6 +61,7 @@ const Dashboard = () => {
         const start = new Date(conf.startDate);
         return start < today;
     });
+
 
 
   return (
@@ -71,14 +85,19 @@ const Dashboard = () => {
           <p style={{ fontSize: "0.8rem", color: "#6B7280" }}>{conf.startDate}</p>
 
           <span style={
-            conf.reviewStatus === "pending"
-              ? styles.statusPending
-              : conf.reviewStatus === "denied"
-              ? styles.statusDenied
-              : styles.statusConfirmed
-          }>
-            {conf.reviewStatus.charAt(0).toUpperCase() + conf.reviewStatus.slice(1)}
-          </span>
+            conf._type === "registered"
+                ? styles.statusRegistered
+                : conf.reviewStatus === "pending"
+                ? styles.statusPending
+                : conf.reviewStatus === "denied"
+                ? styles.statusDenied
+                : styles.statusConfirmed
+            }>
+            {conf._type === "registered"
+                ? "Registered "
+                : conf.reviewStatus.charAt(0).toUpperCase() + conf.reviewStatus.slice(1)}
+        </span>
+
 
           <button
             style={styles.viewButton}
@@ -279,6 +298,16 @@ statusConfirmed: {
     marginTop: "10px",
     display: "inline-block",
     backgroundColor: "#dbfed7",
+    color: "#2D3748",
+    padding: "4px 12px",
+    borderRadius: "20px",
+    fontSize: "0.75rem",
+    fontWeight: "bold"
+    },
+statusRegistered: {
+    marginTop: "10px",
+    display: "inline-block",
+    backgroundColor: "#d7dbfe",
     color: "#2D3748",
     padding: "4px 12px",
     borderRadius: "20px",
