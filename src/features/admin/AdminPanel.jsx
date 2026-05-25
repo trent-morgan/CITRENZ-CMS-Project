@@ -115,7 +115,6 @@ const AdminPanel = () => {
         <div style={styles.modalOverlay}>
           <div style={styles.modalContent}>
             <h2 style={styles.modalTitle}>{selectedConference.title}</h2>
-
             <p><strong>Description:</strong> {selectedConference.description}</p>
             <p><strong>Location:</strong> {selectedConference.location}</p>
             <p><strong>Status:</strong> {selectedConference.status}</p>
@@ -204,6 +203,8 @@ const styles = {
   borderRadius: "12px",
   width: "400px",
   maxWidth: "90%",
+  maxHeight: "80vh",          // ⭐ FIXED HEIGHT LIMIT
+  overflowY: "auto",          // ⭐ ENABLE SCROLLING
   boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
   color: "#2D3748",
   zIndex: 10000

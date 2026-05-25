@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getConferences } from "./conferenceService";   // ⭐ NEW
 
+function formatTime(time) {
+  return new Date(`1970-01-01T${time}:00`).toLocaleTimeString("en-NZ", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true
+  });
+}
+
 const ConferencesPage = () => {
   const navigate = useNavigate();
 
@@ -163,7 +171,11 @@ const ConferencesPage = () => {
                     {conf.status}
                   </span>
                   <h3 style={styles.cardTitle}>{conf.title}</h3>
-                  <p style={styles.details}>{conf.location} • {conf.startDate} {conf.startTime}</p>
+                  <p style={styles.details}>📍{conf.location} • 📅{new Date(conf.startDate).toLocaleDateString("en-NZ", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                  })} • ⏰{formatTime(conf.startTime)}</p>
                 </div>
                 <button style={styles.primaryButton} 
                   onClick={() => handleViewDetail(conf.id)}>

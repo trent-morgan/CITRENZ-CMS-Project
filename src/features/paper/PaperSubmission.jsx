@@ -1,114 +1,213 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; 
-import { MOCK_CONFERENCES } from '../conference/ConferenceDetailPage'; 
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { storage, auth, db } from "../../firebase";
+import { ref as dbRef, push, set, get, ref } from "firebase/database";
+import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const PaperSubmissionPage = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [conference, setConference] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const [title, setTitle] = useState("");
+  const [abstract, setAbstract] = useState("");
+  const [file, setFile] = useState(null);
+
   const [agreementChecked, setAgreementChecked] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
-  const conference = MOCK_CONFERENCES?.find(conf => conf.id === parseInt(id));
+  // Load conference
+  useEffect(() => {
+    async function loadConference() {
+      const snapshot = await get(ref(db, `conference/${id}`));
 
-  const navigate = useNavigate();
-  
+      if (snapshot.exists()) {
+        setConference({ id, ...snapshot.val() });
+      } else {
+        setConference(null);
+      }
+
+      setLoading(false);
+    }
+
+    loadConference();
+  }, [id]);
+
+  // Submit paper
+  const handleSubmit = async () => {
+    if (!title || !abstract || !file || !agreementChecked) {
+      alert("Please fill all fields and agree to the terms.");
+      return;
+    }
+
+    const user = auth.currentUser;
+    if (!user) {
+      alert("You must be logged in to submit.");
+      return;
+    }
+
+    try {
+      // Upload PDF
+      const filePath = `papers/${id}/${user.uid}/${file.name}`;
+      const fileRef = storageRef(storage, filePath);
+
+      await uploadBytes(fileRef, file);
+      const fileUrl = await getDownloadURL(fileRef);
+
+      // Save metadata
+      const paperRef = push(dbRef(db, "paper"));
+
+      await set(paperRef, {
+        id: paperRef.key,
+        conferenceId: id,
+        userId: user.uid,
+        title,
+        abstract,
+        fileUrl,
+        submittedAt: Date.now(),
+        status: "submitted",
+      });
+
+      alert("Paper submitted successfully!");
+      navigate(`/conference-detail/${id}`);
+    } catch (err) {
+      console.error("SUBMISSION ERROR:", err);
+      alert("Failed to submit paper.");
+    }
+  };
+  const handleDownloadTemplate = async () => {
+    try {
+      const fileRef = storageRef(storage, "BCDE311 Ass2 2025 S2.pdf");
+      const url = await getDownloadURL(fileRef);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "BCDE311 Ass2 2025 S2.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("DOWNLOAD ERROR:", error);
+      alert("Failed to download template.");
+    }
+  };
+
+  if (loading) {
+    return <div style={styles.pageWrapper}>Loading conference...</div>;
+  }
+
+  if (!conference) {
+    return (
+      <div style={styles.pageWrapper}>
+        <h1 style={styles.mainTitle}>Conference Not Found</h1>
+        <button onClick={() => navigate('/conferences')} style={styles.backButton}>
+          ← Back to Conferences
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div style={styles.pageWrapper}>
       <div style={styles.backButtonContainer}>
-        <button onClick={() => navigate(`/conference-detail/${id}`)} style={styles.backButton}>← Back to Conference</button>
+        <button onClick={() => navigate(`/conference-detail/${id}`)} style={styles.backButton}>
+          ← Back to Conference
+        </button>
       </div>
+
       <div style={styles.titleRow}>
-        <h1 style={styles.mainTitle}>
-           {conference ? `${conference.title} - Submission` : "Conference Not Found"}
-        </h1>
+        <h1 style={styles.mainTitle}>{conference.title} - Paper Submission</h1>
       </div>
 
       <header style={styles.assignmentHeader}>
         <div style={styles.dateInfo}>
-          <p><strong>Opened:</strong> Thursday, 16 March 2017, 9:10 AM</p>
-          <p><strong>Deadline:</strong> Friday, 31 October 2025, 11:59 PM</p>
+          <p><strong>Opened:</strong> {conference.startDate} {conference.startTime}</p>
+          <p><strong>Deadline:</strong> {conference.endDate} {conference.endTime}</p>
         </div>
 
         <p style={styles.instructions}>
-          File containing Documentation of the Design, Iterations and Testing. 
-          Submit your documentation as one unified document.
+          Upload your paper as a PDF file.
         </p>
       </header>
 
       {!showForm && (
         <>
-            <button style={styles.secondaryButton}>
-              Download template
-            </button>
-            <button style={styles.addSubmissionBtn} onClick={() => setShowForm(true)}>
-              Add submission
-            </button>
+          <button style={styles.secondaryButton} onClick={handleDownloadTemplate}>
+            Download template
+          </button>
 
-            <section style={styles.statusSection}>
+          <button style={styles.addSubmissionBtn} onClick={() => setShowForm(true)}>
+            Add submission
+          </button>
+
+          <section style={styles.statusSection}>
             <h2 style={styles.sectionTitle}>Submission status</h2>
             <table style={styles.statusTable}>
-                <tbody>
-                <tr>
-                    <td style={styles.tableLabel}>Submission status</td>
-                    <td style={styles.tableValue}>-</td>
-                </tr>
-                <tr>
-                    <td style={styles.tableLabel}>Time remaining</td>
-                    <td style={styles.tableValue}>-</td>
-                </tr>
-                <tr>
-                    <td style={styles.tableLabel}>Last modified</td>
-                    <td style={styles.tableValue}>-</td>
-                </tr>
-                <tr>
-                    <td style={styles.tableLabel}>Comments</td>
-                    <td style={styles.tableValue}>-</td>
-                </tr>
-                </tbody>
+              <tbody>
+                <tr><td style={styles.tableLabel}>Submission status</td><td style={styles.tableValue}>-</td></tr>
+                <tr><td style={styles.tableLabel}>Time remaining</td><td style={styles.tableValue}>-</td></tr>
+                <tr><td style={styles.tableLabel}>Last modified</td><td style={styles.tableValue}>-</td></tr>
+                <tr><td style={styles.tableLabel}>Comments</td><td style={styles.tableValue}>-</td></tr>
+              </tbody>
             </table>
-            </section>
+          </section>
         </>
-        )}
+      )}
+
       {showForm && (
         <main style={styles.contentContainer}>
           <section style={styles.submissionFormBlock}>
             <div style={styles.formGroup}>
               <label style={styles.boldLabel}>Title</label>
-              <input type="text" style={styles.textInputSingleLine} />
+              <input
+                type="text"
+                style={styles.textInputSingleLine}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
             </div>
 
             <div style={styles.formGroup}>
               <label style={styles.boldLabel}>Abstract</label>
-              <textarea style={styles.textInputMultiLine} />
+              <textarea
+                style={styles.textInputMultiLine}
+                value={abstract}
+                onChange={(e) => setAbstract(e.target.value)}
+              />
             </div>
 
             <div style={styles.formGroup}>
-              <label style={styles.boldLabel}>Submission Box</label>
-              <div style={styles.fileUploadBox}>
-                <div style={styles.iconWrapper}>
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z" stroke="#3182CE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M14 2V8H20" stroke="#3182CE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      <path d="M12 18V12M12 12L9 15M12 12L15 15" stroke="#3182CE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-              </div>
+              <label style={styles.boldLabel}>Upload File</label>
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={(e) => setFile(e.target.files[0])}
+                style={{ marginTop: "10px" }}
+              />
             </div>
 
             <div style={styles.agreementGroup}>
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 id="agreement"
                 checked={agreementChecked}
                 onChange={(e) => setAgreementChecked(e.target.checked)}
                 style={styles.checkbox}
               />
-              <label htmlFor="agreement" style={styles.agreementLabel}>Agreement to Terms & Conditions</label>
+              <label htmlFor="agreement" style={styles.agreementLabel}>
+                Agreement to Terms & Conditions
+              </label>
             </div>
 
             <div style={styles.buttonGroup}>
-                <button style={styles.submitButton}>Submit</button>
-                <button style={styles.cancelButton} onClick={() => setShowForm(false)}>Cancel</button>
+              <button style={styles.submitButton} onClick={handleSubmit}>
+                Submit
+              </button>
+              <button style={styles.cancelButton} onClick={() => setShowForm(false)}>
+                Cancel
+              </button>
             </div>
           </section>
         </main>
@@ -116,6 +215,7 @@ const PaperSubmissionPage = () => {
     </div>
   );
 };
+
 
 const styles = {
   pageWrapper: {
@@ -240,7 +340,6 @@ const styles = {
     borderRadius: '24px',
     padding: '40px',
     width: '100%',
-    maxWidth: '900px',
     display: 'flex',
     flexDirection: 'column',
     gap: '20px',

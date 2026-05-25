@@ -8,7 +8,7 @@ const firebaseConfig = {
   authDomain: "citrenzcms.firebaseapp.com",
   databaseURL: "https://citrenzcms-default-rtdb.firebaseio.com",
   projectId: "citrenzcms",
-  storageBucket: "citrenzcms.appspot.com",
+  storageBucket: "citrenzcms.firebasestorage.app",
   messagingSenderId: "616135209258",
   appId: "1:616135209258:web:5ad841e0c4423bf659ee53",
   measurementId: "G-98CS6HVJ5S"
@@ -20,3 +20,6 @@ const app = initializeApp(firebaseConfig);
 // Export initialized services
 export const auth = getAuth(app);
 export const db = getDatabase(app);
+
+import { getStorage } from "firebase/storage";
+export const storage = getStorage(app);

@@ -38,3 +38,20 @@ export const submitConference = async (conferenceData, user) => {
     throw error;
   }
 };
+
+export const getUserByEmail = async (email) => {
+  const snapshot = await get(ref(db, "user"));
+
+  if (!snapshot.exists()) return null;
+
+  const users = snapshot.val();
+
+  // Find user whose email matches
+  for (const uid in users) {
+    if (users[uid].email === email) {
+      return { uid, ...users[uid] };
+    }
+  }
+
+  return null;
+};

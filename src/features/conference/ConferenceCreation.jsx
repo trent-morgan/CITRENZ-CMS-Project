@@ -46,7 +46,7 @@ const CreateConference = () => {
         console.error(err);
         alert("Failed to submit conference");
     }
-};
+    };
 
 
   // ⭐ Smart date + time formatting
