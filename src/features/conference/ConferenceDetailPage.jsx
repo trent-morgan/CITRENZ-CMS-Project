@@ -139,11 +139,11 @@ const ConferenceDetailPage = () => {
 
   return (
     <div style={styles.pageWrapper}>
-      <div style={styles.backButtonContainer}>
+      {/* <div style={styles.backButtonContainer}>
         <button onClick={() => navigate('/conferences')} style={styles.backButton}>
           ← Back to List
         </button>
-      </div>
+      </div> */}
 
       <header style={styles.headerSection}>
         <h1 style={styles.mainTitle}>{conference.title}</h1>

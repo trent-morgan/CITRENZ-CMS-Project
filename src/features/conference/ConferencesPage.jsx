@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getConferences } from "./conferenceService";   // ⭐ NEW
+import confImage from '../../assets/it_conference.jpg';  // ⭐ NEW
+import magnifyingGlass from '../../assets/magnifier.png'; // ⭐ NEW
+import filterIcon from '../../assets/filter.png'; // ⭐ NEW
+import calendarIcon from '../../assets/calendar.png'; // ⭐ NEW
+import locationIcon from '../../assets/location-pin.png'; // ⭐ NEW
 
 function formatTime(time) {
   return new Date(`1970-01-01T${time}:00`).toLocaleTimeString("en-NZ", {
@@ -22,10 +27,13 @@ const ConferencesPage = () => {
   const [activeTab, setActiveTab] = useState('quick');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 6;
 
   const [selectedConference, setSelectedConference] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
+  const [isHovered, setIsHovered] = useState(null);
+  const [hoveredCard, setHoveredCard] = useState(null);
 
   const openModal = (conf) => {
     setSelectedConference(conf);
@@ -100,95 +108,111 @@ const ConferencesPage = () => {
 
   return (
     <div style={styles.pageWrapper}>
-      <h1 style={styles.mainTitle}>Conferences</h1>
-
       <div style={styles.mainContainer}>
-        <section style={styles.searchComponent}>
-          <div style={styles.tabHeader}>
-            <button 
-              onClick={() => setActiveTab('quick')}
-              style={activeTab === 'quick' ? styles.tabActive : styles.tabInactive}
-            >
-              Quick Search
-            </button>
-            <button 
-              onClick={() => setActiveTab('advanced')}
-              style={activeTab === 'advanced' ? styles.tabActive : styles.tabInactive}
-            >
-              Advanced Search
-            </button>
+
+        {/* MODERN SEARCH + FILTERS */}
+        <section style={styles.filterContainer}>
+
+          {/* SEARCH BAR */}
+          <div style={styles.searchBar}>
+            <span style={styles.searchIcon}>
+              <img src={magnifyingGlass} alt="Search" style={{ width: "20px", height: "20px" }} />
+            </span>
+            <input
+              type="text"
+              placeholder="Search conferences"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={styles.searchInput}
+            />
+          <button 
+            style={styles.searchButton}
+            onClick={(e) => setSearchTerm(e.target.value)}
+          >
+            Search
+          </button>
           </div>
+          <button 
+            style={styles.filterButton}
+            onClick={() => setActiveTab(activeTab === "filters" ? "none" : "filters")}
+          >
+            <img src={filterIcon} alt="Filters" style={{ width: "20px", height: "20px" }} />
+          </button>
+          {/* FILTER PANEL */}
+          {activeTab === "filters" && (
+            <div style={styles.filterPanel}>
 
-          <div style={styles.tabContent}>
-            {activeTab === 'quick' && (
-              <div style={styles.inputContainer}>
-                <input 
-                  type="text" 
-                  placeholder="Search by name, topic, or location..." 
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  style={styles.searchInputTabbed}
-                />
-              </div>
-            )}
-
-            {activeTab === 'advanced' && (
-              <div style={styles.advancedFiltersGroup}>
-                <div style={styles.filterGroupInline}>
-                  <label style={styles.advancedLabel}>Filter by Location</label>
-                  <select 
-                    style={styles.advancedSelect}
-                    value={selectedLocation}
-                    onChange={(e) => setSelectedLocation(e.target.value)}
-                  >
-                    {locations.map(loc => <option key={loc}>{loc}</option>)}
-                  </select>
+              {/* LOCATION DROPDOWN */}
+              <div style={styles.filterGroup}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "6px", padding: "1rem" }}>
+                  <label style={styles.filterLabel}>Location</label>
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  style={styles.filterSelect}
+                >
+                  {locations.map(loc => (
+                    <option key={loc}>{loc}</option>
+                  ))}
+                </select>
                 </div>
-
-                <div style={styles.filterGroupInline}>
-                  <label style={styles.advancedLabel}>Conference Status</label>
-                  <label style={styles.advancedCheckboxContainer}>
-                    <input 
-                      type="checkbox" 
-                      checked={showOnlyOpen}
-                      onChange={(e) => setShowOnlyOpen(e.target.checked)}
-                      style={styles.checkbox}
-                    />
-                    <span style={styles.filterLabelTabbed}>Show Only Open Conferences</span>
-                  </label>
-                </div>
+                
               </div>
-            )}
-          </div>
+              <button>
+                Apply Filters
+              </button>
+            </div>
+          )}
+
         </section>
 
+        <h1 style={styles.mainTitle}>Upcoming Conferences</h1>
+
+        {/* CONTENT AREA */}
         <main style={styles.contentArea}>
+
+          {/* AIRBNB‑STYLE GRID */}
           <div style={styles.cardGrid}>
             {currentConferences.map(conf => (
-              <div key={conf.id} style={styles.card}>
-                <div style={styles.cardInfoGroup}>
-                  <span style={conf.status === 'Open' ? styles.statusOpen : styles.statusClosed}>
-                    {conf.status}
-                  </span>
-                  <h3 style={styles.cardTitle}>{conf.title}</h3>
-                  <p style={styles.details}>📍{conf.location} • 📅{new Date(conf.startDate).toLocaleDateString("en-NZ", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric"
-                  })} • ⏰{formatTime(conf.startTime)}</p>
+              <div
+                key={conf.id}
+                style={{
+                  ...styles.card,
+                  ...(hoveredCard === conf.id ? styles.cardHover : {})
+                }}
+                onMouseEnter={() => setHoveredCard(conf.id)}
+                onMouseLeave={() => setHoveredCard(null)}
+                onClick={() => handleViewDetail(conf.id)}
+              >
+                <div style={styles.cardImageWrapper}>
+                  <img 
+                    src={confImage}
+                    alt={conf.title}
+                    style={styles.cardImage}
+                  />
                 </div>
-                <button style={styles.primaryButton} 
-                  onClick={() => handleViewDetail(conf.id)}>
-                  View Details
-                </button>
+
+                <div style={styles.cardContent}>
+                  <h3 style={styles.cardTitle}>{conf.title}</h3>
+
+                  <p style={styles.cardMeta}>
+                    <img src={locationIcon} alt="Location" style={{ width: "16px", height: "16px", marginRight: "8px" }} />
+                    {conf.location}<br/>
+                    <img src={calendarIcon} alt="Date" style={{ width: "16px", height: "16px", marginRight: "8px", marginTop: "5px" }} />
+                    {new Date(conf.startDate).toLocaleDateString("en-NZ")}<br/>
+                  </p>
+                </div>
               </div>
+
             ))}
           </div>
 
+          {/* NO RESULTS */}
           {filteredConferences.length === 0 && (
             <p style={styles.noResults}>No conferences found.</p>
           )}
 
+          {/* PAGINATION */}
           {totalPages > 1 && (
             <div style={styles.paginationContainer}>
               <button 
@@ -212,71 +236,286 @@ const ConferencesPage = () => {
               </button>
             </div>
           )}
+
         </main>
       </div>
     </div>
-  );
-};
+  )};
+
 
 const styles = {
-  pageWrapper: { display: 'flex', flexDirection: 'column', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', padding: '1rem', maxWidth: '1200px', margin: '0 auto', width: '100%', boxSizing: 'border-box' },
-  mainTitle: { textAlign: 'center', margin: '1rem 0 2rem 0', fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', fontWeight: '700', color: '#2D3748' },
-  mainContainer: { display: 'flex', flexDirection: 'column', gap: '2rem' },
-  
-  searchComponent: { backgroundColor: '#133860', borderRadius: '15px', overflow: 'hidden', width: '100%' },
-  tabHeader: { display: 'flex', width: '100%', borderBottom: '1px solid #a0aec0'},
-  tabActive: { flex: 1, padding: '1.5rem 1rem', backgroundColor: 'transparent', color: '#1a202c', border: 'none', borderBottom: '4px solid #58a5cc', cursor: 'pointer', fontWeight: '700', fontSize: '1rem', color: '#FFFFFF' },
-  tabInactive: { flex: 1, padding: '1.5rem 1rem', backgroundColor: 'transparent', color: '#4A5568', border: 'none', borderBottom: '4px solid transparent', cursor: 'pointer', fontWeight: '600', fontSize: '1rem',color: '#ffffffad'},
-  tabContent: { padding: '1.25rem 1rem', height: '80px' },
-  inputContainer: { display: 'flex', justifyContent: 'center' },
-  searchInputTabbed: { padding: '0.8rem 1rem', borderRadius: '8px', border: '1px solid #a0aec0', width: '100%', maxWidth: '900px', backgroundColor: 'white', fontSize: '1rem' },
-  
-  advancedFiltersGroup: { display: 'flex', flexWrap: 'wrap', gap: '30px', justifyContent: 'center' },
-  filterGroupInline: { display: 'flex', flexDirection: 'column', gap: '10px', flex: '1 1 300px', maxWidth: '400px' },
-  advancedLabel: { fontSize: '0.9rem', fontWeight: '600', color: '#ffffff', textTransform: 'uppercase' },
-  advancedSelect: { padding: '1rem', borderRadius: '8px', border: '1px solid #a0aec0', backgroundColor: 'white' },
-  advancedCheckboxContainer: { display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', height: '52px', backgroundColor: 'white', padding: '0 1rem', borderRadius: '8px', border: '1px solid #a0aec0' },
-  checkbox: { width: '18px', height: '18px' },
-  filterLabelTabbed: { fontSize: '0.95rem', color: '#2D3748' },
-  
+  pageWrapper: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    minHeight: '100vh', 
+    fontFamily: 'system-ui, sans-serif', 
+    paddingLeft: '1rem', 
+    paddingRight: '1rem',
+    maxWidth: '1200px', 
+    margin: '0 auto', 
+    width: '100%', 
+    boxSizing: 'border-box' 
+  },
 
+  mainTitle: { 
+    textAlign: 'left', 
+    margin: '0rem 0 0rem 0',
+    fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', 
+    fontWeight: '700', 
+    color: '#2D3748', 
+  },
+
+  mainContainer: { 
+    display: 'flex', 
+    flexDirection: 'column', 
+    padding: '20px 0',
+    gap: '2rem' 
+  },
+
+  /* SEARCH COMPONENT */
+  searchComponent: { 
+    backgroundColor: '#133860', 
+    borderRadius: '15px', 
+    overflow: 'hidden', 
+    width: '100%' 
+  },
+
+  tabHeader: { 
+    display: 'flex', 
+    width: '100%', 
+    borderBottom: '1px solid #a0aec0'
+  },
+
+  tabActive: { 
+    flex: 1, 
+    padding: '1.5rem 1rem', 
+    backgroundColor: 'transparent', 
+    border: 'none', 
+    borderBottom: '4px solid #58a5cc', 
+    cursor: 'pointer', 
+    fontWeight: '700', 
+    fontSize: '1rem', 
+    color: '#FFFFFF' 
+  },
+
+  tabInactive: { 
+    flex: 1, 
+    padding: '1.5rem 1rem', 
+    backgroundColor: 'transparent', 
+    border: 'none', 
+    borderBottom: '4px solid transparent', 
+    cursor: 'pointer', 
+    fontWeight: '600', 
+    fontSize: '1rem',
+    color: '#ffffffad'
+  },
+
+  tabContent: { 
+    padding: '1.25rem 1rem', 
+    height: '80px' 
+  },
+
+  inputContainer: { 
+    display: 'flex', 
+    justifyContent: 'center' 
+  },
+
+  searchInputTabbed: { 
+    padding: '0.8rem 1rem', 
+    borderRadius: '8px', 
+    border: '1px solid #a0aec0', 
+    width: '100%', 
+    maxWidth: '900px', 
+    backgroundColor: 'white', 
+    fontSize: '1rem' 
+  },
+  searchButton: {
+    marginLeft: '10px',
+    padding: '0.8rem 1.5rem',
+    backgroundColor: '#3182CE',
+    borderRadius: '25px',
+    border: 'none',
+    color: 'white',
+    fontWeight: '600',
+    cursor: 'pointer',
+  },
+
+  // advancedFiltersGroup: { 
+  //   display: 'flex', 
+  //   flexWrap: 'wrap', 
+  //   gap: '30px', 
+  //   justifyContent: 'center' 
+  // },
+
+  // filterGroupInline: { 
+  //   display: 'flex', 
+  //   flexDirection: 'column', 
+  //   gap: '10px', 
+  //   flex: '1 1 300px', 
+  //   maxWidth: '400px' 
+  // },
+
+  advancedLabel: { 
+    fontSize: '0.9rem', 
+    fontWeight: '600', 
+    color: '#ffffff', 
+    textTransform: 'uppercase' 
+  },
+
+  advancedSelect: { 
+    padding: '1rem', 
+    borderRadius: '8px', 
+    border: '1px solid #a0aec0', 
+    backgroundColor: 'white' 
+  },
+
+  advancedCheckboxContainer: { 
+    display: 'flex', 
+    alignItems: 'center', 
+    gap: '12px', 
+    cursor: 'pointer', 
+    height: '52px', 
+    backgroundColor: 'white', 
+    padding: '0 1rem', 
+    borderRadius: '8px', 
+    border: '1px solid #a0aec0' 
+  },
+
+  checkbox: { width: '18px', height: '18px' },
+
+  // filterLabelTabbed: { 
+  //   fontSize: '0.95rem', 
+  //   color: '#2D3748' 
+  // },
+
+  /* CONTENT AREA */
   contentArea: {
     backgroundColor: '#f0f0f0',
     borderRadius: '15px',
     width: '100%',
-    padding: '20px 0', 
+    padding: '20px 0'
   },
-    cardGrid: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-    padding: '0 20px',
-    boxSizing: 'border-box',
+
+  /* AIRBNB GRID — FIXED */
+  cardGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+    gap: "25px",
+    width: "100%",
+    padding: "20px",
+    boxSizing: "border-box"
   },
+
+  /* CARD */
+  // card: {
+  //   backgroundColor: 'white',
+  //   padding: '20px',
+  //   borderRadius: '12px',
+  //   boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+  //   display: 'flex',
+  //   flexDirection: 'column',
+  //   gap: '12px',
+  //   cursor: 'pointer',
+  //   transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+  // },
+
+  cardHover: {
+    transform: 'translateY(-6px) scale(1.02)',
+    boxShadow: '0 12px 24px rgba(0,0,0,0.15)'
+  },
+
+
   card: {
-    backgroundColor: 'white',
-    padding: '40px',
+    backgroundColor: '#fff',
     borderRadius: '12px',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+    overflow: 'hidden',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+    cursor: 'pointer',
+    transition: 'transform 0.25s ease, box-shadow 0.25s ease',
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '15px',
+    flexDirection: 'column'
   },
-  cardInfoGroup: { display: 'flex', alignItems: 'center', gap: '20px', flex: '1', flexWrap: 'wrap' },
-  cardTitle: { margin: 0, fontSize: '1.2rem', color: '#2D3748', flex: '2 1 250px' },
-  details: { margin: 0, color: '#718096', fontSize: '0.85rem' },
-  statusOpen: { backgroundColor: '#C6F6D5', color: '#22543D', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' },
-  statusClosed: { backgroundColor: '#FED7D7', color: '#822727', padding: '4px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold' },
-  primaryButton: { padding: '10px 24px', backgroundColor: '#3182ce', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' },
-  
+
+
+cardImageWrapper: {
+  width: '100%',
+  height: '180px',
+  overflow: 'hidden'
+},
+
+cardImage: {
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+},
+
+cardContent: {
+  padding: '16px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: '8px'
+},
+
+cardTitle: {
+  fontSize: '1.1rem',
+  fontWeight: '700',
+  margin: 0,
+  color: '#2D3748'
+},
+
+cardDescription: {
+  fontSize: '0.9rem',
+  color: '#4A5568',
+  margin: 0
+},
+
+cardMeta: {
+  fontSize: '0.85rem',
+  color: '#718096',
+  marginTop: '6px',
+  lineHeight: '1.4',
+  textAlign: 'left'   // also works
+},
+
+
+
+  details: { 
+    margin: 0, 
+    color: '#718096', 
+    fontSize: '0.9rem', 
+    lineHeight: '1.4' 
+  },
+
+  statusOpen: { 
+    backgroundColor: '#C6F6D5', 
+    color: '#22543D', 
+    padding: '4px 12px', 
+    borderRadius: '20px', 
+    fontSize: '0.75rem', 
+    fontWeight: 'bold', 
+    width: 'fit-content' 
+  },
+
+  statusClosed: { 
+    backgroundColor: '#FED7D7', 
+    color: '#822727', 
+    padding: '4px 12px', 
+    borderRadius: '20px', 
+    fontSize: '0.75rem', 
+    fontWeight: 'bold', 
+    width: 'fit-content' 
+  },
+
+  /* PAGINATION */
   paginationContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     gap: '20px',
-    padding: '30px 20px',
+    padding: '30px 20px'
   },
+
   pageBtn: {
     padding: '8px 16px',
     backgroundColor: '#3182ce',
@@ -284,21 +523,135 @@ const styles = {
     border: 'none',
     borderRadius: '6px',
     cursor: 'pointer',
-    fontWeight: '600',
+    fontWeight: '600'
   },
+
   pageBtnDisabled: {
     padding: '8px 16px',
     backgroundColor: '#cbd5e0',
     color: '#718096',
     border: 'none',
     borderRadius: '6px',
-    cursor: 'not-allowed',
+    cursor: 'not-allowed'
   },
+
   pageInfo: {
     fontSize: '0.9rem',
-    color: '#4A5568',
+    color: '#4A5568'
   },
-  noResults: { textAlign: 'center', padding: '40px', color: '#718096' }
+
+  noResults: { 
+    textAlign: 'center', 
+    padding: '40px', 
+    color: '#718096' 
+  },
+
+  /* MODERN FILTER CONTAINER */
+filterContainer: {
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  gap: "1rem",
+  marginBottom: "1rem"
+},
+
+/* SEARCH BAR */
+searchBar: {
+  display: "flex",
+  alignItems: "center",
+  backgroundColor: "white",
+  padding: "0.8rem 1rem",
+  borderRadius: "50px",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  gap: "12px"
+},
+
+searchIcon: {
+  fontSize: "1.2rem",
+  opacity: 0.6
+},
+
+searchInput: {
+  flex: 1,
+  border: "none",
+  outline: "none",
+  fontSize: "1rem"
+},
+
+filterButton: {
+  backgroundColor: "#e8e8e8",
+  color: "white",
+  padding: "0.6rem 1rem",
+  borderRadius: "25px",
+  border: "none",
+  cursor: "pointer",
+  fontWeight: "600"
+},
+
+/* FILTER PANEL */
+filterPanel: {
+  backgroundColor: "white",
+  // padding: "1.2rem",
+  borderRadius: "15px",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  display: "flex",
+  flexDirection: "column",
+  gap: "1.5rem"
+},
+
+filterGroup: {
+  display: "flex",
+  flexDirection: "row",
+  gap: "8px",
+  padding: "0 1rem",
+},
+
+filterLabel: {
+  fontSize: "0.9rem",
+  fontWeight: "600",
+  color: "#2D3748"
+},
+
+filterSelect: {
+  padding: "0.8rem",
+  borderRadius: "10px",
+  border: "1px solid #CBD5E0",
+  fontSize: "0.7rem",
+  backgroundColor: "white"
+},
+
+/* MODERN TOGGLE SWITCH */
+toggleWrapper: {
+  position: "relative",
+  width: "50px",
+  height: "26px",
+  display: "inline-block"
+},
+
+toggleCheckbox: {
+  opacity: 0,
+  width: 0,
+  height: 0
+},
+
+toggleSlider: {
+  position: "absolute",
+  cursor: "pointer",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: "#CBD5E0",
+  borderRadius: "34px",
+  transition: "0.3s"
+},
+
+/* When checked */
+toggleCheckboxChecked: {
+  backgroundColor: "#3182CE"
+}
+
 };
+
 
 export default ConferencesPage;

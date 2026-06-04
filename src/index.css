@@ -1,3 +1,19 @@
+@font-face {
+  font-family: 'Soleil';
+  src: url('/fonts/soleil/Soleil-Regular.woff2') format('woff2'),
+       url('/fonts/soleil/Soleil-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Soleil';
+  src: url('/fonts/soleil/Soleil-Bold.woff2') format('woff2'),
+       url('/fonts/soleil/Soleil-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -11,9 +27,9 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
-  --sans: "Microsoft JhengHei", "微軟正黑體", sans-serif;
+  /* --sans: "Microsoft JhengHei", "微軟正黑體", sans-serif;
   --heading: "Microsoft JhengHei", "微軟正黑體", sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --mono: ui-monospace, Consolas, monospace; */
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
@@ -82,6 +98,7 @@ h1 {
     margin: 20px 0;
   }
 }
+
 h2 {
   font-size: 24px;
   line-height: 118%;
@@ -124,6 +141,11 @@ code {
   transition: all 0.3s ease;
   border: none;
 }
+
+html, body {
+  font-family: 'Soleil', system-ui, sans-serif;
+}
+
 
 /* .nav-gradient-btn:hover {
   background: linear-gradient(135deg, #2C5282 0%, #3182CE 100%);

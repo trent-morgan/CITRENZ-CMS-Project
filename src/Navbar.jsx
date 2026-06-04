@@ -1,118 +1,283 @@
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logoImg from './assets/logo.png';
 import profileImg from './assets/profile_icon.png';
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [hamburgerOpen, setHamburgerOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 900);
 
   const user = localStorage.getItem("currentUser");
   const parsedUser = user ? JSON.parse(user) : null;
-  const [profileOpen, setProfileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 900);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <nav style={styles.navbar}>
+      
+      {/* Logo */}
       <div style={styles.logoContainer}>
         <Link to="/">
-          <img src={logoImg} alt="CITRENZ Logo" style={styles.logoImage} />
+          <img 
+            src={logoImg} 
+            alt="CITRENZ Logo" 
+            style={isMobile ? styles.logoImageMobile : styles.logoImage} 
+          />
         </Link>
       </div>
 
-      <ul style={styles.navLinks}>
-        <li 
-          style={styles.dropdownWrapper}
-          onMouseEnter={() => setDropdownOpen(true)}
-          onMouseLeave={() => setDropdownOpen(false)}
-        >
-          <div style={styles.link}>
-            Services 
-            <span style={{ 
-              ...styles.arrow, 
-              transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)' 
-            }}>
-              ▼
-            </span>
-          </div>
+      {/* MOBILE RIGHT CONTROLS */}
+      {isMobile && (
+        <div style={styles.rightControls}>
 
-          {dropdownOpen && (
-            <ul style={styles.dropdownMenu}>
+          {/* Mobile Profile Icon */}
+          {parsedUser && (
+            <img 
+              src={profileImg} 
+              alt="Profile" 
+              style={styles.profileImageMobile}
+              onClick={() => {
+                setProfileOpen(!profileOpen);
+                setHamburgerOpen(false);
+              }}
+            />
+          )}
+
+          {/* Hamburger / X Icon */}
+          <div 
+            style={styles.hamburgerContainer}
+            onClick={() => {
+              setHamburgerOpen(!hamburgerOpen);
+              setProfileOpen(false);
+            }}
+          >
+            <div 
+              style={{
+                ...styles.hamburgerLine,
+                transform: hamburgerOpen ? 'rotate(45deg) translate(5px, 5px)' : 'none'
+              }}
+            ></div>
+
+            <div 
+              style={{
+                ...styles.hamburgerLine,
+                opacity: hamburgerOpen ? 0 : 1
+              }}
+            ></div>
+
+            <div 
+              style={{
+                ...styles.hamburgerLine,
+                transform: hamburgerOpen ? 'rotate(-45deg) translate(6px, -6px)' : 'none'
+              }}
+            ></div>
+          </div>
+        </div>
+      )}
+
+      {/* DESKTOP NAV */}
+      {!isMobile && (
+        <ul style={styles.navLinks}>
+          <li style={styles.dropdownWrapper}>
+            <div 
+              style={styles.link}
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              Services 
+              <span
+                style={{
+                  ...styles.arrow,
+                  transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+                  transition: "transform 0.25s ease"
+                }}
+              >
+                ▼
+              </span>
+            </div>
+
+            {dropdownOpen && (
+              <ul style={styles.dropdownMenu}>
+                <li style={styles.dropdownItem}>
+                  <Link to="/dashboard" style={styles.cleanLink}>Dashboard</Link>
+                </li>
+                <li style={styles.dropdownItemSeparator}></li>
+                <li style={styles.dropdownItem}>
+                  <Link to="/conference-creation" style={styles.cleanLink}>Create Conference</Link>
+                </li>
+              </ul>
+            )}
+          </li>
+
+
+          <li style={styles.link}>
+            <Link to="/conferences" style={styles.cleanLink}>Conferences</Link>
+          </li>
+          <li style={styles.link}>
+            <Link to="/contact" style={styles.cleanLink}>Contact</Link>
+          </li>
+          <li style={styles.link}>
+            <Link to="/about-us" style={styles.cleanLink}>About Us</Link>
+          </li>
+        </ul>
+      )}
+
+      {/* DESKTOP PROFILE (HIDDEN ON MOBILE) */}
+      {!isMobile && (
+        <div 
+          style={styles.profileContainer}
+          onClick={() => parsedUser && setProfileOpen(!profileOpen)}
+        >
+          {!parsedUser && (
+            <Link to="/login" style={styles.cleanLink}>
+              <img src={profileImg} alt="Login" style={styles.profileImage} />
+            </Link>
+          )}
+
+          {parsedUser && (
+            <>
+              <span style={styles.userName}>
+                {parsedUser.first_name + " " + parsedUser.last_name}
+              </span>
+              <img src={profileImg} alt="Profile Icon" style={styles.profileImage} />
+              <span
+                style={{
+                  ...styles.arrow,
+                  transform: profileOpen ? "rotate(180deg)" : "rotate(0deg)"
+                }}
+              >
+                ▼
+              </span>
+            </>
+          )}
+
+          {parsedUser && profileOpen && (
+            <ul style={styles.profileDropdown}>
               <li style={styles.dropdownItem}>
-                <Link to="/dashboard" style={styles.cleanLink}>Dashboard</Link>
+                <p style={{ fontWeight: '800', cursor: 'default', color: '#333' }}>
+                  {parsedUser.email} 
+                </p>
               </li>
-              <li style={styles.dropdownItemSeparator}></li>
               <li style={styles.dropdownItem}>
-                <Link to="/conference-creation" style={styles.cleanLink}>Create Conference</Link>
+                <Link to="/profile" style={styles.cleanLink}>Profile</Link>
+              </li>
+
+              <li 
+                style={styles.dropdownItem}
+                onClick={() => {
+                  localStorage.removeItem("currentUser");
+                  localStorage.removeItem("userLoggedIn");
+                  window.location.href = "/login";
+                }}
+              >
+                Logout
               </li>
             </ul>
           )}
-        </li>
+        </div>
+      )}
 
-        <li style={styles.link}>
-          <Link to="/conferences" style={styles.cleanLink}>Conferences</Link>
-        </li>
-        <li style={styles.link}>
+      {/* MOBILE MENU (ANIMATED) */}
+      {isMobile && (
+        <ul 
+          style={{
+            ...styles.mobileMenu,
+            maxHeight: hamburgerOpen ? "500px" : "0px"
+          }}
+        >
+          <li 
+            style={styles.mobileItem}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            Services
+            <span style={{ ...styles.arrow, marginLeft: 8 }}>
+              {dropdownOpen ? "▲" : "▼"}
+            </span>
+          </li>
+
+          {dropdownOpen && (
+            <>
+              <li style={styles.mobileSubItem}>
+                <Link to="/dashboard" style={styles.cleanLink}>Dashboard</Link>
+              </li>
+              <li style={styles.mobileSubItem}>
+                <Link to="/conference-creation" style={styles.cleanLink}>Create Conference</Link>
+              </li>
+            </>
+          )}
+
+          <li style={styles.mobileItem}>
+            <Link to="/conferences" style={styles.cleanLink}>Conferences</Link>
+          </li>
+          <li style={styles.mobileItem}>
             <Link to="/contact" style={styles.cleanLink}>Contact</Link>
-        </li>
-        <li style={styles.link}>
-          <Link to="/about-us" style={styles.cleanLink}>About Us</Link>
-        </li>
-      </ul>
+          </li>
+          <li style={styles.mobileItem}>
+            <Link to="/about-us" style={styles.cleanLink}>About Us</Link>
+          </li>
 
-      <div 
-        style={styles.profileContainer}
-        onClick={() => {
-          if (!parsedUser) return; // only toggle if logged in
-          setProfileOpen(!profileOpen);
-        }}
-      >
-        {/* Logged OUT state */}
-        {!parsedUser && (
-          <Link to="/login" style={styles.cleanLink}>
-            <img src={profileImg} alt="Login" style={styles.profileImage} />
-          </Link>
-        )}
-
-        {/* Logged IN state */}
-        {parsedUser && (
-          <>
-            <span style={styles.userName}>
-              {parsedUser.first_name + " " + parsedUser.last_name}
-            </span>
-            <img src={profileImg} alt="Profile Icon" style={styles.profileImage} />
-
-            <span
-              style={{
-                ...styles.arrow,
-                transform: profileOpen ? "rotate(180deg)" : "rotate(0deg)"
-              }}
-            >
-              ▼
-            </span>
-          </>
-        )}
-
-        {/* Dropdown */}
-        {parsedUser && profileOpen && (
-          <ul style={styles.profileDropdown}>
-            <li style={styles.dropdownItem}>
-              <Link to="/profile" style={styles.cleanLink}>Profile</Link>
+          {/* SIGN UP (ONLY WHEN LOGGED OUT) */}
+          {!parsedUser && (
+            <li style={styles.mobileItem}>
+              <Link to="/login" style={styles.cleanLink}>Sign In</Link>
             </li>
+          )}
 
-            <li style={styles.dropdownItemSeparator}></li>
+          {/* MOBILE PROFILE DROPDOWN (ONLY WHEN LOGGED IN) */}
+          {parsedUser && profileOpen && (
+            <>
+              <li style={styles.mobileItem}>{parsedUser.email}</li>
+              <li style={styles.mobileItem}>
+                <Link to="/profile" style={styles.cleanLink}>Profile</Link>
+              </li>
+              <li 
+                style={styles.mobileItem}
+                onClick={() => {
+                  localStorage.removeItem("currentUser");
+                  localStorage.removeItem("userLoggedIn");
+                  window.location.href = "/login";
+                }}
+              >
+                Logout
+              </li>
+            </>
+          )}
+        </ul>
+      )}
 
-            <li 
-              style={styles.dropdownItem}
-              onClick={() => {
-                localStorage.removeItem("currentUser");
-                localStorage.removeItem("userLoggedIn");
-                window.location.href = "/login";
-              }}
-            >
-              Logout
-            </li>
-          </ul>
-        )}
-      </div>
+      {/* MOBILE PROFILE DROPDOWN (SEPARATE FROM HAMBURGER) */}
+      {isMobile && (
+        <ul 
+          style={{
+            ...styles.mobileMenu,
+            maxHeight: profileOpen ? "300px" : "0px"
+          }}
+        >
+          <li style={styles.mobileItem}>{parsedUser?.email}</li>
+
+          <li style={styles.mobileItem}>
+            <Link to="/profile" style={styles.cleanLink}>Profile</Link>
+          </li>
+
+          <li 
+            style={styles.mobileItem}
+            onClick={() => {
+              localStorage.removeItem("currentUser");
+              localStorage.removeItem("userLoggedIn");
+              window.location.href = "/login";
+            }}
+          >
+            Logout
+          </li>
+        </ul>
+      )}
+
+
     </nav>
   );
 };
@@ -122,111 +287,171 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '0 40px',
+    padding: '0 20px',
     height: '60px',
     backgroundColor: '#133860',
     position: 'sticky',
     top: 0,
     zIndex: 1000,
   },
+
+  logoContainer: { display: 'flex', alignItems: 'center' },
+
+  logoImage: {
+    height: '30px',
+    backgroundColor: 'white',
+    padding: '8px 15px',
+    borderRadius: '50px',
+  },
+
+  logoImageMobile: {
+    height: '22px',
+    backgroundColor: 'white',
+    padding: '5px 10px',
+    borderRadius: '40px',
+  },
+
+  rightControls: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '15px',
+  },
+
+  profileImageMobile: {
+    height: '35px',
+    width: 'auto',
+    cursor: 'pointer',
+  },
+
+  hamburgerContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '5px',
+    cursor: 'pointer',
+  },
+
+  hamburgerLine: {
+    width: '25px',
+    height: '3px',
+    backgroundColor: 'white',
+    borderRadius: '3px',
+    transition: 'all 0.3s ease',
+  },
+
+  mobileMenu: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    width: '100%',
+    backgroundColor: '#133860',
+    overflow: 'hidden',
+    transition: 'max-height 0.35s ease',
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+    zIndex: 1500,
+  },
+
+  mobileItem: {
+    padding: '15px 25px',
+    color: 'white',
+    fontSize: '1rem',
+    fontWeight: '600',
+    cursor: 'pointer',
+  },
+
+  mobileSubItem: {
+    padding: '10px 45px',
+    color: 'white',
+    backgroundColor: '#1c4a7a',
+    fontSize: '0.9rem',
+  },
+
   navLinks: {
     display: 'flex',
+    gap: '40px',
     listStyle: 'none',
-    gap: '50px',
-    margin: 0,
-    padding: 0,
-    alignItems: 'center',
   },
+
   link: {
-    fontSize: '0.9rem',
-    color: '#ffffff',
-    cursor: 'pointer',
+    color: 'white',
     fontWeight: '600',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
+    cursor: 'pointer',
   },
+
   arrow: {
-    fontSize: '0.6rem',
+    fontSize: '0.7rem',
+    marginLeft: '5px',
     transition: 'transform 0.2s ease',
-    color: '#ffffff',   // ← this keeps it white
+    color: 'white',
   },
+
   dropdownWrapper: {
-    position: 'relative', 
-    height: '70px',       
-    display: 'flex',
-    alignItems: 'center',
+    position: 'relative',
   },
+
   dropdownMenu: {
     position: 'absolute',
-    top: '65px',         
-    left: '0',
-    backgroundColor: '#ffffff',
+    top: '60px',
+    left: 0,
+    backgroundColor: 'white',
+    borderRadius: '8px',
+    padding: '10px 0',
+    listStyle: 'none',
     minWidth: '180px',
-    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+  },
+
+  dropdownItem: {
+    padding: '10px 20px',
+    cursor: 'pointer',
+  },
+
+  dropdownItemSeparator: {
+    height: '1px',
+    backgroundColor: '#ddd',
+    margin: '5px 0',
+  },
+
+  profileContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+    position: 'relative',
+  },
+
+  profileImage: {
+    height: '45px',
+  },
+
+  userName: {
+    color: 'white',
+    marginRight: '10px',
+    fontWeight: '600',
+  },
+
+  profileDropdown: {
+    position: 'absolute',
+    top: '60px',
+    right: 0,
+    backgroundColor: 'white',
     borderRadius: '8px',
     listStyle: 'none',
     padding: '10px 0',
-    border: '1px solid #E2E8F0',
-    zIndex: 1001,
-  },
-  dropdownItem: {
-    padding: '10px 20px',
-    fontSize: '0.9rem',
-    fontWeight: '500',
-    transition: 'background 0.2s',
-    cursor: 'pointer',
-  },
-  dropdownItemSeparator: {
-    height: '1px',
-    backgroundColor: '#E2E8F0',
-    margin: '5px 0',
-  },
-  cleanLink: { textDecoration: 'none', color: 'inherit' },
-  logoContainer: { display: 'flex', alignItems: 'center', height: '100%' },
-  logoImage: {
-      height: '30px',             
-      width: 'auto',
-      display: 'block',
-      backgroundColor: 'white',
-      padding: '8px 15px',        
-      borderRadius: '50px',       
-      transition: 'all 0.3s ease', 
-      cursor: 'pointer',
-      // filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.3))', 
-  },
-  profileContainer: { display: 'flex', alignItems: 'center', height: '100%',cursor: 'pointer', },
-  profileImage: { height: '45px', width: 'auto', display: 'block' },
-  gradientLink: {
-    textDecoration: 'none',
-    fontWeight: '600',
-    fontSize: '0.8rem',
-    color: '#ffffff',
-    backgroundImage: 'linear-gradient(to right, #48a1f4, #3e72b1)',
-    padding: '8px 16px',
-    borderRadius: '50px',
-  },
-  userName: {
-    color: "white",
-    marginLeft: "10px",
-    fontWeight: "600",
-    cursor: "pointer",
-    fontSize: "0.8rem",
+    minWidth: '150px',
   },
 
-profileDropdown: {
-  position: "absolute",
-  top: '45px',         
-  right: "0",
-  backgroundColor: "#ffffff",
-  minWidth: "150px",
-  boxShadow: "0 10px 15px rgba(0,0,0,0.1)",
-  borderRadius: "8px",
-  listStyle: "none",
-  padding: "10px 0",
-  border: "1px solid #E2E8F0",
-  zIndex: 2000,
-  },
+  cleanLink: { textDecoration: 'none', color: 'inherit' },
+  link: {
+  color: 'white',
+  fontWeight: '600',
+  cursor: 'pointer',
+  display: 'flex',          // REQUIRED
+  alignItems: 'center',     // REQUIRED
+  gap: '6px',               // REQUIRED
+  userSelect: 'none',       // optional but nice
+},
+
 };
+
 
 export default Navbar;
