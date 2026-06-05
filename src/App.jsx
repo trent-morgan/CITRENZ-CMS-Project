@@ -16,7 +16,10 @@ import AdminPanel from './features/admin/AdminPanel';
 import Contact from './features/contact/Contact';
 import Profile from './features/profile/Profile';
 import Dashboard from './features/dashboard/Dashboard';
-
+import AuthorPanel from './features/dashboard/AuthorPanel';
+import ReviewerPanel from './features/dashboard/ReviewerPanel';
+import OrganizerPanel from './features/dashboard/OrganizerPanel';
+import PaperDetailPage from './features/paper/PaperDetail';
 
 const AppContent = () => {
   const location = useLocation();
@@ -69,7 +72,30 @@ const AppContent = () => {
               </ProtectedRoute>
             } 
           />
+          
+          <Route path="/author-panel" element={
+            <ProtectedRoute>
+              <AuthorPanel />
+            </ProtectedRoute>
+          } />
 
+          <Route path="/reviewer-panel" element={
+            <ProtectedRoute>
+              <ReviewerPanel />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/organizer-panel" element={
+            <ProtectedRoute>
+              <OrganizerPanel />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/paper-detail/:id" element={
+            <ProtectedRoute>
+              <PaperDetailPage />
+            </ProtectedRoute>
+          } />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<Register />} />

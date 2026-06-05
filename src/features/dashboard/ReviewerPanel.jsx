@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getMyConferences, getMyPapers, getMyRegistrations } from "./dashboardService";
 import { useNavigate } from "react-router-dom";
 
-const Dashboard = () => {
+const ReviewerPanel = () => {
   const [myConferences, setMyConferences] = useState([]);
   const [myPapers, setMyPapers] = useState([]);
   const [selectedConference, setSelectedConference] = useState(null);
@@ -13,9 +13,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleCardClick = (role) => {
-    if (role === "author") navigate("/author-panel");
-    if (role === "reviewer") navigate("/reviewer-panel");
-    if (role === "organizer") navigate("/organizer-panel");
+    if (role === "author") navigate("/author");
+    if (role === "reviewer") navigate("/reviewer");
+    if (role === "organizer") navigate("/organizer");
   };
 
   const openModal = (conf) => {
@@ -64,53 +64,7 @@ const Dashboard = () => {
 
   return (
     <div style={styles.pageWrapper}>
-      <h1 style={styles.mainTitle}>Dashboard</h1>
-
-      <div style={styles.rolePanel}>
-
-        {/* AUTHOR */}
-        <div
-          style={{
-            ...styles.authorCard,
-            ...(hoveredCard === "author" ? styles.cardHover : {})
-          }}
-          onMouseEnter={() => setHoveredCard("author")}
-          onMouseLeave={() => setHoveredCard(null)}
-          onClick={() => handleCardClick("author")}
-        >
-          <h2 style={styles.roleTitle}>Author Panel</h2>
-          <p style={styles.roleDesc}>Manage your papers and submissions.</p>
-        </div>
-
-        {/* REVIEWER */}
-        <div
-          style={{
-            ...styles.reviewerCard,
-            ...(hoveredCard === "reviewer" ? styles.cardHover : {})
-          }}
-          onMouseEnter={() => setHoveredCard("reviewer")}
-          onMouseLeave={() => setHoveredCard(null)}
-          onClick={() => handleCardClick("reviewer")}
-        >
-          <h2 style={styles.roleTitle}>Reviewer Panel</h2>
-          <p style={styles.roleDesc}>Review papers and provide feedback.</p>
-        </div>
-
-        {/* ORGANIZER */}
-        <div
-          style={{
-            ...styles.organizerCard,
-            ...(hoveredCard === "organizer" ? styles.cardHover : {})
-          }}
-          onMouseEnter={() => setHoveredCard("organizer")}
-          onMouseLeave={() => setHoveredCard(null)}
-          onClick={() => handleCardClick("organizer")}
-        >
-          <h2 style={styles.roleTitle}>Organizer Panel</h2>
-          <p style={styles.roleDesc}>Manage conferences and submissions.</p>
-        </div>
-
-      </div>
+      <h1 style={styles.mainTitle}>Reviewer Panel</h1>
 
       {/* UPCOMING CONFERENCES */}
       <h2 style={styles.sectionTitle}>Upcoming Conferences</h2>
@@ -394,17 +348,15 @@ closeButton: {
     padding: "20px",
     color: "white",
     width: "250px",
-    textAlign: "center",
-    cursor: "pointer"
+    textAlign: "center"
   },
   reviewerCard: {
-    backgroundColor: "#ab9862",
+    backgroundColor: "#ab6262",
     borderRadius: "10px",
     padding: "20px",
     color: "white",
     width: "250px",
-    textAlign: "center",
-    cursor: "pointer"
+    textAlign: "center"
   },
   organizerCard: {
     backgroundColor: "#69ab62",
@@ -412,8 +364,7 @@ closeButton: {
     padding: "20px",
     color: "white",
     width: "250px",
-    textAlign: "center",
-    cursor: "pointer"
+    textAlign: "center"
   },
   roleTitle: {
     fontSize: "1.25rem",
@@ -427,4 +378,4 @@ cardHover: {
 
 };
 
-export default Dashboard;
+export default ReviewerPanel;

@@ -59,16 +59,21 @@ const PaperSubmissionPage = () => {
       // Save metadata
       const paperRef = push(dbRef(db, "paper"));
 
-      await set(paperRef, {
-        id: paperRef.key,
-        conferenceId: id,
-        userId: user.uid,
-        title,
-        abstract,
-        fileUrl,
-        submittedAt: Date.now(),
-        status: "submitted",
-      });
+    await set(paperRef, {
+      id: paperRef.key,
+      conferenceId: id,
+      conferenceTitle: conference.title,
+      userId: user.uid,
+      createdBy: user.email,        // ← REQUIRED FOR AUTHOR PANEL
+      title,
+      abstract,
+      fileUrl,
+      submittedAt: Date.now(),
+      submissionDate: new Date().toISOString(),
+      status: "submitted",
+    });
+
+
 
       alert("Paper submitted successfully!");
       navigate(`/conference-detail/${id}`);

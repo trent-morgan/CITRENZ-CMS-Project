@@ -35,6 +35,19 @@ const ConferencesPage = () => {
   const [isHovered, setIsHovered] = useState(null);
   const [hoveredCard, setHoveredCard] = useState(null);
 
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [tagsDropdownOpen, setTagsDropdownOpen] = useState(false); 
+
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [sortBy, setSortBy] = useState("date");
+
+  // TEMPORARY TAGS (replace with real tags later)
+  const tags = ["AI", "Cloud", "Security", "Education", "Business", "Research"];
+
+
   const openModal = (conf) => {
     setSelectedConference(conf);
     setShowModal(true);
@@ -71,6 +84,24 @@ const ConferencesPage = () => {
     const location = (conf.location || "").toLowerCase();
     const search = searchTerm.toLowerCase();
 
+        // DATE FILTERS
+    const matchesStartDate =
+      startDate ? new Date(conf.startDate) >= new Date(startDate) : true;
+
+    const matchesEndDate =
+      endDate ? new Date(conf.startDate) <= new Date(endDate) : true;
+
+    // TAG FILTER
+    const matchesTags =
+      selectedTags.length > 0
+        ? selectedTags.every(tag => conf.tags?.includes(tag))
+        : true;
+
+    // STATUS FILTER
+    const matchesStatusDropdown =
+      selectedStatus === "all" ? true : conf.status === selectedStatus;
+
+
     // ⭐ Only show confirmed conferences
     const isConfirmed = conf.reviewStatus === "confirmed";
 
@@ -89,7 +120,16 @@ const ConferencesPage = () => {
         ? conf.status === 'Open'
         : true;
 
-    return isConfirmed && matchesSearch && matchesLocation && matchesStatus;
+    return (
+      isConfirmed &&
+      matchesSearch &&
+      matchesLocation &&
+      matchesStatus &&
+      matchesStartDate &&
+      matchesEndDate &&
+      matchesTags &&
+      matchesStatusDropdown
+    );
   });
 
 
@@ -142,21 +182,118 @@ const ConferencesPage = () => {
           {activeTab === "filters" && (
             <div style={styles.filterPanel}>
 
-              {/* LOCATION DROPDOWN */}
               <div style={styles.filterGroup}>
-                <div style={{ display: "flex", flexDirection: "column", gap: "6px", padding: "1rem" }}>
+                <div style={styles.filterItem}>
                   <label style={styles.filterLabel}>Location</label>
-                <select
-                  value={selectedLocation}
-                  onChange={(e) => setSelectedLocation(e.target.value)}
-                  style={styles.filterSelect}
-                >
-                  {locations.map(loc => (
-                    <option key={loc}>{loc}</option>
-                  ))}
-                </select>
+                  <select
+                    value={selectedLocation}
+                    onChange={(e) => setSelectedLocation(e.target.value)}
+                    style={styles.filterSelect}
+                  >
+                    {locations.map(loc => (
+                      <option key={loc}>{loc}</option>
+                    ))}
+                  </select>
                 </div>
-                
+                {/* START DATE */}
+                <div style={styles.filterGroup}>
+                  <div style={styles.filterItem}>
+                    <label style={styles.filterLabel}>Start Date</label>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      style={styles.filterSelect}
+                    />
+                  </div>
+
+                </div>
+
+                {/* END DATE */}
+                <div style={styles.filterGroup}>
+                  <div style={styles.filterItem}>
+                  <label style={styles.filterLabel}>End Date</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    style={styles.filterSelect}
+                  />
+                  </div>
+
+                </div>
+
+                {/* TAGS */}
+                <div style={styles.filterGroup}>
+                  <div style={styles.filterItem}>
+                    <label style={styles.filterLabel}>Tags</label>
+                    <div 
+                      style={styles.dropdownBox}
+                      onClick={() => setTagsDropdownOpen(!tagsDropdownOpen)}
+                    >
+                      {selectedTags.length === 0 
+                        ? "Select tags…" 
+                        : selectedTags.join(", ")
+                      }
+                    </div>
+
+                    {tagsDropdownOpen && (
+                      <div style={styles.dropdownMenu}>
+                        {tags.map(tag => (
+                          <label key={tag} style={styles.dropdownItem}>
+                            <input
+                              type="checkbox"
+                              checked={selectedTags.includes(tag)}
+                              onChange={() => {
+                                if (selectedTags.includes(tag)) {
+                                  setSelectedTags(selectedTags.filter(t => t !== tag));
+                                } else {
+                                  setSelectedTags([...selectedTags, tag]);
+                                }
+                              }}
+                            />
+                            <span>{tag}</span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  
+                </div>
+
+                {/* STATUS */}
+                <div style={styles.filterGroup}>
+                  <div style={styles.filterItem}>
+                    <label style={styles.filterLabel}>Status</label>
+                    <select
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                      style={styles.filterSelect}
+                    >
+                      <option value="all">All</option>
+                      <option value="Open">Open</option>
+                      <option value="Closed">Closed</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* SORT BY */}
+                <div style={styles.filterGroup}>
+                  <div style={styles.filterItem}>
+                    <label style={styles.filterLabel}>Sort By</label>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      style={styles.filterSelect}
+                    >
+                      <option value="date">Start Date</option>
+                      <option value="location">Location</option>
+                      <option value="title">Title</option>
+                    </select>
+                  </div>
+                </div>
+
               </div>
               <button>
                 Apply Filters
@@ -260,7 +397,7 @@ const styles = {
   mainTitle: { 
     textAlign: 'left', 
     margin: '0rem 0 0rem 0',
-    fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', 
+    fontSize: '2.2rem', 
     fontWeight: '700', 
     color: '#2D3748', 
   },
@@ -321,7 +458,7 @@ const styles = {
   },
 
   searchInputTabbed: { 
-    padding: '0.8rem 1rem', 
+    padding: '0.6rem 0.9rem', 
     borderRadius: '8px', 
     border: '1px solid #a0aec0', 
     width: '100%', 
@@ -329,31 +466,16 @@ const styles = {
     backgroundColor: 'white', 
     fontSize: '1rem' 
   },
+
   searchButton: {
     marginLeft: '10px',
-    padding: '0.8rem 1.5rem',
+    padding: '0.5rem 1.5rem',
     backgroundColor: '#3182CE',
-    borderRadius: '25px',
     border: 'none',
     color: 'white',
     fontWeight: '600',
     cursor: 'pointer',
   },
-
-  // advancedFiltersGroup: { 
-  //   display: 'flex', 
-  //   flexWrap: 'wrap', 
-  //   gap: '30px', 
-  //   justifyContent: 'center' 
-  // },
-
-  // filterGroupInline: { 
-  //   display: 'flex', 
-  //   flexDirection: 'column', 
-  //   gap: '10px', 
-  //   flex: '1 1 300px', 
-  //   maxWidth: '400px' 
-  // },
 
   advancedLabel: { 
     fontSize: '0.9rem', 
@@ -424,7 +546,6 @@ const styles = {
     boxShadow: '0 12px 24px rgba(0,0,0,0.15)'
   },
 
-
   card: {
     backgroundColor: '#fff',
     borderRadius: '12px',
@@ -435,7 +556,6 @@ const styles = {
     display: 'flex',
     flexDirection: 'column'
   },
-
 
 cardImageWrapper: {
   width: '100%',
@@ -560,9 +680,10 @@ searchBar: {
   display: "flex",
   alignItems: "center",
   backgroundColor: "white",
-  padding: "0.8rem 1rem",
-  borderRadius: "50px",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  padding: "0.3rem 1rem",
+  border: "1.5px solid #000000",
+  borderRadius: "10px",
+  // boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
   gap: "12px"
 },
 
@@ -605,6 +726,12 @@ filterGroup: {
   gap: "8px",
   padding: "0 1rem",
 },
+filterItem: { 
+  display: "flex", 
+  flexDirection: "column", 
+  gap: "6px", 
+  padding: "1rem" 
+},
 
 filterLabel: {
   fontSize: "0.9rem",
@@ -613,8 +740,8 @@ filterLabel: {
 },
 
 filterSelect: {
-  padding: "0.8rem",
-  borderRadius: "10px",
+  padding: "0.4rem",
+  borderRadius: "0px",
   border: "1px solid #CBD5E0",
   fontSize: "0.7rem",
   backgroundColor: "white"
@@ -649,7 +776,38 @@ toggleSlider: {
 /* When checked */
 toggleCheckboxChecked: {
   backgroundColor: "#3182CE"
+},
+dropdownBox: {
+  padding: "0.8rem",
+  borderRadius: "10px",
+  border: "1px solid #CBD5E0",
+  backgroundColor: "white",
+  cursor: "pointer",
+  userSelect: "none"
+},
+
+dropdownMenu: {
+  marginTop: "6px",
+  backgroundColor: "white",
+  borderRadius: "10px",
+  border: "1px solid #CBD5E0",
+  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  padding: "10px",
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+  maxHeight: "160px",
+  overflowY: "auto"
+},
+
+dropdownItem: {
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  cursor: "pointer",
+  fontSize: "0.95rem"
 }
+
 
 };
 

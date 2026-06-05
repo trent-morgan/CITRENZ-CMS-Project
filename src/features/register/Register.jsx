@@ -145,6 +145,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: "20px",              
     background: 'linear-gradient(120deg, #143767, #6C98B1)',
     fontFamily: 'system-ui, -apple-system, sans-serif',
     padding: '70px 40px',
@@ -242,8 +243,8 @@ const styles = {
     fontWeight: '500',
   },
   logoImage: { 
-  height: '45px', 
-  width: 'auto',
+    height: '2.7rem', 
+    width: 'auto',
   },
 };
 

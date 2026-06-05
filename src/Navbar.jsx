@@ -438,6 +438,7 @@ const styles = {
     listStyle: 'none',
     padding: '10px 0',
     minWidth: '150px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
   },
 
   cleanLink: { textDecoration: 'none', color: 'inherit' },

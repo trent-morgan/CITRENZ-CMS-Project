@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getMyConferences, getMyPapers, getMyRegistrations } from "./dashboardService";
 import { useNavigate } from "react-router-dom";
 
-const Dashboard = () => {
+const AuthorPanel = () => {
   const [myConferences, setMyConferences] = useState([]);
   const [myPapers, setMyPapers] = useState([]);
   const [selectedConference, setSelectedConference] = useState(null);
@@ -12,11 +12,15 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
 
-  const handleCardClick = (role) => {
-    if (role === "author") navigate("/author-panel");
-    if (role === "reviewer") navigate("/reviewer-panel");
-    if (role === "organizer") navigate("/organizer-panel");
-  };
+    const handleDeletePaper = async (paperId) => {
+    if (!window.confirm("Are you sure you want to delete this paper?")) return;
+
+    // TODO: call your delete service
+    // await deletePaper(paperId);
+
+    setMyPapers(prev => prev.filter(p => p.id !== paperId));
+    };
+
 
   const openModal = (conf) => {
     setSelectedConference(conf);
@@ -64,123 +68,73 @@ const Dashboard = () => {
 
   return (
     <div style={styles.pageWrapper}>
-      <h1 style={styles.mainTitle}>Dashboard</h1>
+      <h1 style={styles.mainTitle}>Author Panel</h1>
 
-      <div style={styles.rolePanel}>
+        {/* ===========================
+            MY SUBMITTED PAPERS TABLE
+        =========================== */}
+        <h2 style={styles.sectionTitle}>My Submitted Papers</h2>
 
-        {/* AUTHOR */}
-        <div
-          style={{
-            ...styles.authorCard,
-            ...(hoveredCard === "author" ? styles.cardHover : {})
-          }}
-          onMouseEnter={() => setHoveredCard("author")}
-          onMouseLeave={() => setHoveredCard(null)}
-          onClick={() => handleCardClick("author")}
-        >
-          <h2 style={styles.roleTitle}>Author Panel</h2>
-          <p style={styles.roleDesc}>Manage your papers and submissions.</p>
-        </div>
-
-        {/* REVIEWER */}
-        <div
-          style={{
-            ...styles.reviewerCard,
-            ...(hoveredCard === "reviewer" ? styles.cardHover : {})
-          }}
-          onMouseEnter={() => setHoveredCard("reviewer")}
-          onMouseLeave={() => setHoveredCard(null)}
-          onClick={() => handleCardClick("reviewer")}
-        >
-          <h2 style={styles.roleTitle}>Reviewer Panel</h2>
-          <p style={styles.roleDesc}>Review papers and provide feedback.</p>
-        </div>
-
-        {/* ORGANIZER */}
-        <div
-          style={{
-            ...styles.organizerCard,
-            ...(hoveredCard === "organizer" ? styles.cardHover : {})
-          }}
-          onMouseEnter={() => setHoveredCard("organizer")}
-          onMouseLeave={() => setHoveredCard(null)}
-          onClick={() => handleCardClick("organizer")}
-        >
-          <h2 style={styles.roleTitle}>Organizer Panel</h2>
-          <p style={styles.roleDesc}>Manage conferences and submissions.</p>
-        </div>
-
-      </div>
-
-      {/* UPCOMING CONFERENCES */}
-      <h2 style={styles.sectionTitle}>Upcoming Conferences</h2>
-
-      {upcomingConferences.length === 0 ? (
-        <p style={styles.emptyMessage}>No upcoming conferences.</p>
-      ) : (
+        {myPapers.length === 0 ? (
+        <p style={styles.emptyMessage}>You have not submitted any papers yet.</p>
+        ) : (
         <div style={styles.table}>
-          <div style={styles.tableHeader}>
-            <span style={styles.colTitle}>Title</span>
-            <span style={styles.colDate}>Start Date</span>
-            <span style={styles.colStatus}>Status</span>
-            <span style={styles.colAction}>Action</span>
-          </div>
-
-          {upcomingConferences.map(conf => (
-            <div
-              key={conf.id}
-              style={{
-                ...styles.tableRow,
-                ...(hoveredRow === conf.id ? styles.tableRowHover : {})
-              }}
-              onMouseEnter={() => setHoveredRow(conf.id)}
-              onMouseLeave={() => setHoveredRow(null)}
-            >
-              <span style={styles.colTitle}>{conf.title}</span>
-              <span style={styles.colDate}>{conf.startDate}</span>
-
-              <span style={styles.colStatus}>
-                {conf._type === "registered"
-                  ? "Registered"
-                  : conf.reviewStatus.charAt(0).toUpperCase() + conf.reviewStatus.slice(1)}
-              </span>
-
-              <button
-                style={styles.tableButton}
-                onClick={() => {
-                  if (conf.reviewStatus === "confirmed") {
-                    navigate(`/conference-detail/${conf.id}`);
-                  } else {
-                    openModal(conf);
-                  }
-                }}
-              >
-                View
-              </button>
+            <div style={styles.tableHeader}>
+                <span style={styles.colTitle}>Title</span>
+                <span style={styles.colConf}>Conference</span>
+                <span style={styles.colDate}>Submission Date</span>
+                <span style={styles.colStatus}>Status</span>
+                <span style={styles.colAction}>Actions</span>
             </div>
-          ))}
+
+            {myPapers.map(paper => (
+            <div
+                key={paper.id}
+                style={{
+                ...styles.tableRow,
+                ...(hoveredRow === paper.id ? styles.tableRowHover : {})
+                }}
+                onMouseEnter={() => setHoveredRow(paper.id)}
+                onMouseLeave={() => setHoveredRow(null)}
+            >
+                <span style={styles.colTitle}>{paper.title}</span>
+                <span style={styles.colConf}>{paper.conferenceTitle}</span>
+                <span style={styles.colDate}>{paper.submissionDate}</span>
+
+                <span style={styles.colStatus}>
+                {paper.status.charAt(0).toUpperCase() + paper.status.slice(1)}
+                </span>
+                <span style={styles.colAction}>
+                  <div style={styles.actionButtons}>
+                <button
+                    style={styles.tableButton}
+                    onClick={() => navigate(`/paper-detail/${paper.id}`)}
+                >
+                    View
+                </button>
+
+                <button
+                    style={styles.tableButton2}
+                    onClick={() => navigate(`/paper-detail/${paper.id}/edit`)}
+                >
+                    Update
+                </button>
+
+                <button
+                    style={styles.tableButton2}
+                    onClick={() => handleDeletePaper(paper.id)}
+                >
+                    Delete
+                </button>
+                </div>  
+                </span>
+                
+            </div>
+            ))}
         </div>
-      )}
+        )}
 
-      {/* MODAL */}
-      {showModal && selectedConference && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalContent}>
-            <h2 style={styles.modalTitle}>{selectedConference.title}</h2>
 
-            <p><strong>Description:</strong> {selectedConference.description}</p>
-            <p><strong>Location:</strong> {selectedConference.location}</p>
-            <p><strong>Status:</strong> {selectedConference.status}</p>
-            <p><strong>Review Status:</strong> {selectedConference.reviewStatus}</p>
-            <p><strong>Start:</strong> {selectedConference.startDate} {selectedConference.startTime}</p>
-            <p><strong>End:</strong> {selectedConference.endDate} {selectedConference.endTime}</p>
-
-            <button style={styles.closeButton} onClick={closeModal}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
@@ -246,24 +200,24 @@ table: {
 },
 
 tableHeader: {
-  display: "grid",
-  gridTemplateColumns: "2fr 1fr 1fr 1fr",
-  backgroundColor: "#F7FAFC",
-  padding: "14px 20px",
-  fontWeight: "700",
-  fontSize: "0.9rem",
-  color: "#2D3748",
-  borderBottom: "1px solid #E2E8F0"
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
+    backgroundColor: "#c0d7f7",
+    padding: "14px 20px",
+    fontWeight: "700",
+    fontSize: "0.9rem",
+    color: "#000000",
+    borderBottom: "1px solid #E2E8F0"
 },
 
 tableRow: {
   display: "grid",
-  gridTemplateColumns: "2fr 1fr 1fr 1fr",
+gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr",
   padding: "14px 20px",
   alignItems: "center",
   borderBottom: "1px solid #EDF2F7",
   fontSize: "0.9rem",
-  color: "#4A5568",
+  color: "#4a5568",
   transition: "background 0.2s ease"
 },
 
@@ -280,6 +234,17 @@ tableButton: {
   padding: "6px 12px",
   backgroundColor: "#133860",
   color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontSize: "0.85rem",
+  fontWeight: "600"
+},
+
+tableButton2: {
+  padding: "6px 12px",
+  backgroundColor: "#efefef",
+  color: "black",
   border: "none",
   borderRadius: "6px",
   cursor: "pointer",
@@ -394,17 +359,15 @@ closeButton: {
     padding: "20px",
     color: "white",
     width: "250px",
-    textAlign: "center",
-    cursor: "pointer"
+    textAlign: "center"
   },
   reviewerCard: {
-    backgroundColor: "#ab9862",
+    backgroundColor: "#ab6262",
     borderRadius: "10px",
     padding: "20px",
     color: "white",
     width: "250px",
-    textAlign: "center",
-    cursor: "pointer"
+    textAlign: "center"
   },
   organizerCard: {
     backgroundColor: "#69ab62",
@@ -412,8 +375,7 @@ closeButton: {
     padding: "20px",
     color: "white",
     width: "250px",
-    textAlign: "center",
-    cursor: "pointer"
+    textAlign: "center"
   },
   roleTitle: {
     fontSize: "1.25rem",
@@ -424,7 +386,60 @@ cardHover: {
   transform: "translateY(-4px)",
   boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
 },
+colConf: { width: "20%" },
+actionButtons: {
+  display: "flex",
+  gap: "8px"
+},
+viewButton: {
+  padding: "6px 10px",
+  background: "#3B82F6",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer"
+},
+updateButton: {
+  padding: "6px 10px",
+  background: "#F59E0B",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer"
+},
+deleteButton: {
+  padding: "6px 10px",
+  background: "#EF4444",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer"
+},
+colTitle: {
+  flex: "2",
+  minWidth: "180px"
+},
+colConf: {
+  flex: "2",
+  minWidth: "180px"
+},
+colDate: {
+  flex: "1",
+  minWidth: "140px"
+},
+colStatus: {
+  flex: "1",
+  minWidth: "120px"
+},
+colAction: {
+  flex: "1",
+  minWidth: "160px",
+  display: "flex",
+  gap: "8px"
+}
+
+
 
 };
 
-export default Dashboard;
+export default AuthorPanel;

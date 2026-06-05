@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getMyConferences, getMyPapers, getMyRegistrations } from "./dashboardService";
 import { useNavigate } from "react-router-dom";
 
-const Dashboard = () => {
+const OrganizerPanel = () => {
   const [myConferences, setMyConferences] = useState([]);
   const [myPapers, setMyPapers] = useState([]);
   const [selectedConference, setSelectedConference] = useState(null);
@@ -13,9 +13,9 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleCardClick = (role) => {
-    if (role === "author") navigate("/author-panel");
-    if (role === "reviewer") navigate("/reviewer-panel");
-    if (role === "organizer") navigate("/organizer-panel");
+    if (role === "author") navigate("/author");
+    if (role === "reviewer") navigate("/reviewer");
+    if (role === "organizer") navigate("/organizer");
   };
 
   const openModal = (conf) => {
@@ -62,105 +62,72 @@ const Dashboard = () => {
     return start < today;
   });
 
+  async function loadData() {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    if (!user) return;
+
+    // Conferences the organizer created
+    const created = await getMyConferences(user.email);
+
+    // All papers in the system
+    const allPapers = await getAllPapers();
+
+    // Papers submitted to conferences the organizer created
+    const papersForMyConferences = allPapers.filter(
+        p => created.some(conf => conf.id === p.conferenceId)
+    );
+
+    setMyConferences(created);
+    setMyPapers(papersForMyConferences);
+    }
+
+
   return (
     <div style={styles.pageWrapper}>
-      <h1 style={styles.mainTitle}>Dashboard</h1>
+        <h1 style={styles.mainTitle}>Organizer Panel</h1>
 
-      <div style={styles.rolePanel}>
+        {/* UPCOMING CONFERENCES */}
+        <h2 style={styles.sectionTitle}>Submitted Papers</h2>
 
-        {/* AUTHOR */}
-        <div
-          style={{
-            ...styles.authorCard,
-            ...(hoveredCard === "author" ? styles.cardHover : {})
-          }}
-          onMouseEnter={() => setHoveredCard("author")}
-          onMouseLeave={() => setHoveredCard(null)}
-          onClick={() => handleCardClick("author")}
-        >
-          <h2 style={styles.roleTitle}>Author Panel</h2>
-          <p style={styles.roleDesc}>Manage your papers and submissions.</p>
-        </div>
-
-        {/* REVIEWER */}
-        <div
-          style={{
-            ...styles.reviewerCard,
-            ...(hoveredCard === "reviewer" ? styles.cardHover : {})
-          }}
-          onMouseEnter={() => setHoveredCard("reviewer")}
-          onMouseLeave={() => setHoveredCard(null)}
-          onClick={() => handleCardClick("reviewer")}
-        >
-          <h2 style={styles.roleTitle}>Reviewer Panel</h2>
-          <p style={styles.roleDesc}>Review papers and provide feedback.</p>
-        </div>
-
-        {/* ORGANIZER */}
-        <div
-          style={{
-            ...styles.organizerCard,
-            ...(hoveredCard === "organizer" ? styles.cardHover : {})
-          }}
-          onMouseEnter={() => setHoveredCard("organizer")}
-          onMouseLeave={() => setHoveredCard(null)}
-          onClick={() => handleCardClick("organizer")}
-        >
-          <h2 style={styles.roleTitle}>Organizer Panel</h2>
-          <p style={styles.roleDesc}>Manage conferences and submissions.</p>
-        </div>
-
-      </div>
-
-      {/* UPCOMING CONFERENCES */}
-      <h2 style={styles.sectionTitle}>Upcoming Conferences</h2>
-
-      {upcomingConferences.length === 0 ? (
-        <p style={styles.emptyMessage}>No upcoming conferences.</p>
-      ) : (
+        {myPapers.length === 0 ? (
+        <p style={styles.emptyMessage}>No papers submitted yet.</p>
+        ) : (
         <div style={styles.table}>
-          <div style={styles.tableHeader}>
+            <div style={styles.tableHeader}>
             <span style={styles.colTitle}>Title</span>
-            <span style={styles.colDate}>Start Date</span>
+            <span style={styles.colConf}>Conference</span>
+            <span style={styles.colDate}>Submitted</span>
             <span style={styles.colStatus}>Status</span>
-            <span style={styles.colAction}>Action</span>
-          </div>
-
-          {upcomingConferences.map(conf => (
-            <div
-              key={conf.id}
-              style={{
-                ...styles.tableRow,
-                ...(hoveredRow === conf.id ? styles.tableRowHover : {})
-              }}
-              onMouseEnter={() => setHoveredRow(conf.id)}
-              onMouseLeave={() => setHoveredRow(null)}
-            >
-              <span style={styles.colTitle}>{conf.title}</span>
-              <span style={styles.colDate}>{conf.startDate}</span>
-
-              <span style={styles.colStatus}>
-                {conf._type === "registered"
-                  ? "Registered"
-                  : conf.reviewStatus.charAt(0).toUpperCase() + conf.reviewStatus.slice(1)}
-              </span>
-
-              <button
-                style={styles.tableButton}
-                onClick={() => {
-                  if (conf.reviewStatus === "confirmed") {
-                    navigate(`/conference-detail/${conf.id}`);
-                  } else {
-                    openModal(conf);
-                  }
-                }}
-              >
-                View
-              </button>
+            <span style={styles.colAction}>Actions</span>
             </div>
-          ))}
+
+            {myPapers.map(paper => (
+            <div
+                key={paper.id}
+                style={{
+                ...styles.tableRow,
+                ...(hoveredRow === paper.id ? styles.tableRowHover : {})
+                }}
+                onMouseEnter={() => setHoveredRow(paper.id)}
+                onMouseLeave={() => setHoveredRow(null)}
+            >
+                <span style={styles.colTitle}>{paper.title}</span>
+                <span style={styles.colConf}>
+                {myConferences.find(c => c.id === paper.conferenceId)?.title}
+                </span>
+                <span style={styles.colDate}>{new Date(paper.submittedAt).toLocaleString()}</span>
+                <span style={styles.colStatus}>{paper.status}</span>
+
+                <div style={styles.actionButtons}>
+                <button style={styles.viewButton}>View</button>
+                <button style={styles.updateButton}>Update</button>
+                <button style={styles.deleteButton}>Delete</button>
+                </div>
+            </div>
+            ))}
         </div>
-      )}
+        )}
+
 
       {/* MODAL */}
       {showModal && selectedConference && (
@@ -394,17 +361,15 @@ closeButton: {
     padding: "20px",
     color: "white",
     width: "250px",
-    textAlign: "center",
-    cursor: "pointer"
+    textAlign: "center"
   },
   reviewerCard: {
-    backgroundColor: "#ab9862",
+    backgroundColor: "#ab6262",
     borderRadius: "10px",
     padding: "20px",
     color: "white",
     width: "250px",
-    textAlign: "center",
-    cursor: "pointer"
+    textAlign: "center"
   },
   organizerCard: {
     backgroundColor: "#69ab62",
@@ -412,8 +377,7 @@ closeButton: {
     padding: "20px",
     color: "white",
     width: "250px",
-    textAlign: "center",
-    cursor: "pointer"
+    textAlign: "center"
   },
   roleTitle: {
     fontSize: "1.25rem",
@@ -427,4 +391,4 @@ cardHover: {
 
 };
 
-export default Dashboard;
+export default OrganizerPanel;

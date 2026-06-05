@@ -64,5 +64,13 @@ export async function getMyRegistrations(userId) {
     }
   }
 
+
   return conferences;
+}
+
+export async function getAllPapers() {
+  const snapshot = await get(ref(db, "paper"));
+  const data = snapshot.val() || {};
+
+  return Object.keys(data).map(id => ({ id, ...data[id] }));
 }

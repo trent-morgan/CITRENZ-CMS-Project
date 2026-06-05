@@ -105,7 +105,7 @@ const ConferenceDetailPage = () => {
     const user = auth.currentUser;
 
     if (!user) {
-      alert("You must be logged in to register.");
+      navigate("/login"); 
       return;
     }
 
