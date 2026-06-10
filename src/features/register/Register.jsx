@@ -43,7 +43,7 @@ const RegistrationPage = () => {
       if (data.role === 'admin') {
         window.location.href = '/admin';
       } else {
-        window.location.href = '/profile';
+        window.location.href = '/dashboard';
       }
     }
 
@@ -205,6 +205,8 @@ const styles = {
     border: '1px solid #d1d5db',
     fontSize: '16px',
     boxSizing: 'border-box',
+    backgroundColor: '#ffffff',
+    color: '#2D3748',
   },
   options: {
     display: 'flex',

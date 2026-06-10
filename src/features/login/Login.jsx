@@ -33,7 +33,7 @@ const LoginPage = () => {
       if (data.role === "admin") {
         navigate('/admin');
       } else {
-        navigate('/profile');
+        navigate('/dashboard');
       }
     }
 
@@ -175,6 +175,8 @@ const styles = {
     border: '1px solid #d1d5db',
     fontSize: '16px',
     boxSizing: 'border-box',
+    backgroundColor: '#ffffff',
+    color: '#2D3748',
   },
   options: {
     display: 'flex',

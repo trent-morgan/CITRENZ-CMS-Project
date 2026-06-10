@@ -11,6 +11,10 @@ const Dashboard = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
 
   const navigate = useNavigate();
+  React.useEffect(() => {
+    document.body.style.backgroundColor = "white";
+    document.documentElement.style.backgroundColor = "white";
+  }, []);
 
   const handleCardClick = (role) => {
     if (role === "author") navigate("/author-panel");
@@ -238,12 +242,13 @@ table: {
   display: "flex",
   flexDirection: "column",
   width: "100%",
+  overflowX: "auto",   
   borderRadius: "10px",
-  overflow: "hidden",
   border: "1px solid #E2E8F0",
   backgroundColor: "white",
   marginBottom: "2rem"
 },
+
 
 tableHeader: {
   display: "grid",
@@ -253,7 +258,11 @@ tableHeader: {
   fontWeight: "700",
   fontSize: "0.9rem",
   color: "#2D3748",
-  borderBottom: "1px solid #E2E8F0"
+  borderBottom: "1px solid #E2E8F0",
+
+  "@media (max-width: 700px)": {
+    display: "none"
+  }
 },
 
 tableRow: {
@@ -264,17 +273,37 @@ tableRow: {
   borderBottom: "1px solid #EDF2F7",
   fontSize: "0.9rem",
   color: "#4A5568",
-  transition: "background 0.2s ease"
+  transition: "background 0.2s ease",
+
+  "@media (max-width: 700px)": {
+    gridTemplateColumns: "1fr",
+    rowGap: "8px",
+    padding: "16px",
+    border: "1px solid #E2E8F0",
+    borderRadius: "10px",
+    marginBottom: "12px"
+  }
+},
+
+mobileLabel: {
+  display: "none",
+  fontWeight: "600",
+  color: "#2D3748",
+  marginRight: "6px",
+
+  "@media (max-width: 700px)": {
+    display: "inline-block"
+  }
 },
 
 tableRowHover: {
   backgroundColor: "#F7FAFC"
 },
 
-colTitle: { textAlign: "left" },
-colDate: { textAlign: "left" },
-colStatus: { textAlign: "left" },
-colAction: { textAlign: "left" },
+colTitle: { textAlign: "left", whiteSpace: "normal", wordBreak: "break-word", minWidth: 0 },
+colDate: { textAlign: "left", whiteSpace: "normal", wordBreak: "break-word", minWidth: 0 },
+colStatus: { textAlign: "left", whiteSpace: "normal", wordBreak: "break-word", minWidth: 0 },
+colAction: { textAlign: "left", whiteSpace: "normal", wordBreak: "break-word", minWidth: 0 },
 
 tableButton: {
   padding: "6px 12px",
@@ -381,19 +410,28 @@ closeButton: {
     cursor: "pointer",
     marginTop: "20px",
 },
-  rolePanel: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "20px",
-    marginBottom: "3rem"
-  },
+rolePanel: {
+  display: "flex",
+  flexDirection: "row",
+  gap: "20px",
+  marginBottom: "3rem",
+  justifyContent: "center",
+  flexWrap: "wrap",
+
+  "@media (max-width: 700px)": {
+    flexDirection: "column",
+    alignItems: "stretch"
+  }
+},
+
 
   authorCard: {
     backgroundColor: "#6281ab",
     borderRadius: "10px",
     padding: "20px",
     color: "white",
-    width: "250px",
+    width: "100%",
+    maxWidth: "260px",
     textAlign: "center",
     cursor: "pointer"
   },
@@ -402,7 +440,8 @@ closeButton: {
     borderRadius: "10px",
     padding: "20px",
     color: "white",
-    width: "250px",
+    width: "100%",
+    maxWidth: "260px",
     textAlign: "center",
     cursor: "pointer"
   },
@@ -411,10 +450,12 @@ closeButton: {
     borderRadius: "10px",
     padding: "20px",
     color: "white",
-    width: "250px",
+    width: "100%",
+    maxWidth: "260px",
     textAlign: "center",
     cursor: "pointer"
   },
+
   roleTitle: {
     fontSize: "1.25rem",
     fontWeight: "700",

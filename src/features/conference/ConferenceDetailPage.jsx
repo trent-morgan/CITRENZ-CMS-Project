@@ -6,6 +6,18 @@ import profileImg from '../../assets/profile_icon.png';
 import { getUserByEmail } from "./conferenceService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
+function useWindowWidth() {
+  const [width, setWidth] = React.useState(window.innerWidth);
+
+  React.useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return width;
+}
+
 function formatTime(time) {
   return new Date(`1970-01-01T${time}:00`).toLocaleTimeString("en-NZ", {
     hour: "numeric",
@@ -23,7 +35,15 @@ const ConferenceDetailPage = () => {
   const [creator, setCreator] = useState(null);
   const [isRegistered, setIsRegistered] = useState(false);
 
+  const width = useWindowWidth();
+  const isMobile = width < 850;
 
+  const layoutGridStyle = {
+    display: "grid",
+    gridTemplateColumns: isMobile ? "1fr" : "1fr 350px",
+    gap: "40px",
+    alignItems: "start"
+  };
 
   useEffect(() => {
     async function loadConference() {
@@ -99,6 +119,15 @@ const ConferenceDetailPage = () => {
       </div>
     );
   }
+  const primaryButtonStyle = {
+    ...styles.primaryButton,
+    width: isMobile ? "100%" : "auto"
+  };
+
+  const secondaryButtonStyle = {
+    ...styles.secondaryButton,
+    width: isMobile ? "100%" : "auto"
+  };
 
  const handleRegister = async () => {
     const auth = getAuth();
@@ -166,7 +195,7 @@ const ConferenceDetailPage = () => {
 
       </header>
 
-      <div style={styles.layoutGrid}>
+      <div style={layoutGridStyle}>
         <main style={styles.mainContent}>
           
           <section style={styles.section}>
@@ -177,13 +206,13 @@ const ConferenceDetailPage = () => {
           <div style={styles.actionRow}>
             <button
               onClick={() => navigate('../paper-submission/' + conference.id)}
-              style={styles.primaryButton}
+              style={primaryButtonStyle}
             >
               Submit a Paper
             </button>
             <button
               onClick={handleRegister}
-              style={styles.secondaryButton}
+              style={secondaryButtonStyle}
               disabled={isRegistered}
             >
               {isRegistered ? "Registered ✓" : "Register to Attend"}
@@ -241,107 +270,96 @@ const ConferenceDetailPage = () => {
 
 const styles = {
   pageWrapper: {
-    paddingLeft: '4rem 5%',
-    paddingRight: '4rem 5%',
-    paddingTop: '2rem',
-    paddingBottom: '2rem',
-
+    padding: '2rem 5%',
     fontFamily: 'system-ui, sans-serif',
     color: '#2D3748',
     maxWidth: '1000px',
     margin: '0 auto',
+
+    "@media (max-width: 600px)": {
+      padding: '1rem'
+    }
   },
+
   headerSection: {
     marginBottom: '2rem',
-    textAlign: 'center',
+    textAlign: 'center'
   },
+
   mainTitle: {
     fontSize: '3.5rem',
     fontWeight: '800',
-    margin: '1rem 0',
-    marginBottom: '2rem',
+    margin: '1rem 0 2rem',
+    color: '#000000',
+
+    "@media (max-width: 700px)": {
+      fontSize: '2.2rem'
+    }
   },
-  backButton: {
-    backgroundColor: 'transparent',
-    border: 'none',
-    color: '#3182ce',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    fontWeight: '600',
-    alignItems: 'flex-start',
-  },
-  backButtonContainer: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    paddingBottom: '1rem',
-  },
+
   statusOpen: {
     backgroundColor: '#C6F6D5',
     color: '#22543D',
     padding: '6px 16px',
     borderRadius: '20px',
     fontSize: '0.85rem',
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
+
   statusClosed: {
     backgroundColor: '#FED7D7',
     color: '#C53030',
     padding: '6px 16px',
     borderRadius: '20px',
     fontSize: '0.85rem',
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
-  mainContainer: {
-    backgroundColor: '#fff',
-    borderRadius: '15px',
-    boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-    border: '1px solid #E2E8F0',
-    padding: '2rem',
-  },
-  createdByContainer: {
-    textAlign: 'center',
-    width: '100%',
-    marginBottom: '1rem',
-    marginTop: '1rem',
-  },
-  createdBy: {
-    fontSize: '0.8rem',
-    color: '#718096',
-  },
-  infoGrid: {
+
+  layoutGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '20px',
-    marginBottom: '2rem',
-    borderBottom: '1px solid #E2E8F0',
-    paddingBottom: '2rem',
+    gridTemplateColumns: '1fr 350px',
+    gap: '40px',
+    alignItems: 'start',
+
+    "@media (max-width: 850px)": {
+      gridTemplateColumns: '1fr'
+    }
   },
-  label: {
-    fontSize: '0.85rem',
-    color: '#718096',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-    fontWeight: 'bold',
+
+  mainContent: {
+    width: '100%'
   },
-  infoText: {
-    fontSize: '1.2rem',
-    margin: '5px 0 0 0',
-    fontWeight: '600',
-  },
+
   subTitle: {
     fontSize: '1.5rem',
     marginBottom: '1rem',
+    color: '#000000',
+
+    "@media (max-width: 700px)": {
+      fontSize: '1.25rem'
+    }
   },
+
   description: {
     lineHeight: '1.6',
     color: '#4A5568',
     fontSize: '1.1rem',
+
+    "@media (max-width: 700px)": {
+      fontSize: '1rem'
+    }
   },
+
   actionRow: {
     display: 'flex',
     gap: '15px',
     marginTop: '3rem',
+
+    "@media (max-width: 700px)": {
+      flexDirection: 'column'
+    }
   },
+
   primaryButton: {
     backgroundColor: '#3182ce',
     color: 'white',
@@ -350,7 +368,12 @@ const styles = {
     borderRadius: '8px',
     fontWeight: 'bold',
     cursor: 'pointer',
+
+    "@media (max-width: 700px)": {
+      width: '100%'
+    }
   },
+
   secondaryButton: {
     backgroundColor: '#EDF2F7',
     color: '#2D3748',
@@ -359,71 +382,66 @@ const styles = {
     borderRadius: '8px',
     fontWeight: 'bold',
     cursor: 'pointer',
+
+    "@media (max-width: 700px)": {
+      width: '100%'
+    }
   },
-  
-  layoutGrid: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 350px', 
-    gap: '40px',
-    alignItems: 'start',
-  },
-  
+
   sidebar: {
     display: 'flex',
     flexDirection: 'column',
     gap: '20px',
+
+    "@media (max-width: 850px)": {
+      width: '100%',
+      maxWidth: '500px',
+      margin: '0 auto'
+    }
   },
+
   sidebarCard: {
     backgroundColor: '#F7FAFC',
     padding: '24px',
     borderRadius: '12px',
-    border: '1px solid #E2E8F0',
+    border: '1px solid #E2E8F0'
   },
+
   sidebarTitle: {
     fontSize: '1.1rem',
     margin: '0 0 16px 0',
     color: '#2D3748',
     borderBottom: '2px solid #E2E8F0',
-    paddingBottom: '8px',
+    paddingBottom: '8px'
   },
-  
+
   dateItem: {
     display: 'flex',
     flexDirection: 'column',
     marginBottom: '12px',
     paddingLeft: '10px',
-    borderLeft: '3px solid #3182ce', 
+    borderLeft: '3px solid #3182ce'
   },
+
   dateLabel: {
     fontSize: '0.8rem',
     fontWeight: 'bold',
     textTransform: 'uppercase',
-    color: '#718096',
+    color: '#718096'
   },
+
   dateValue: {
     fontSize: '1rem',
     color: '#2D3748',
-    fontWeight: '600',
+    fontWeight: '600'
   },
 
   infoRow: {
     fontSize: '0.95rem',
     marginBottom: '10px',
-    color: '#4A5568',
-  },
-  description: {
-    lineHeight: '1.6',
-    color: '#4A5568',
-    fontSize: '0.9rem',
-  },
-
-  
-
-  '@media (max-width: 850px)': {
-    layoutGrid: {
-      gridTemplateColumns: '1fr',
-    },
-  },
+    color: '#4A5568'
+  }
 };
+
 
 export default ConferenceDetailPage;

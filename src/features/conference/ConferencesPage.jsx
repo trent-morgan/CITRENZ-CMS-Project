@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getConferences } from "./conferenceService";   // ⭐ NEW
-import confImage from '../../assets/it_conference.jpg';  // ⭐ NEW
+import confImage from '../../assets/placeholder.jpg';  // ⭐ NEW
 import magnifyingGlass from '../../assets/magnifier.png'; // ⭐ NEW
 import filterIcon from '../../assets/filter.png'; // ⭐ NEW
 import calendarIcon from '../../assets/calendar.png'; // ⭐ NEW
@@ -17,9 +17,13 @@ function formatTime(time) {
 
 const ConferencesPage = () => {
   const navigate = useNavigate();
+  React.useEffect(() => {
+    document.body.style.backgroundColor = "white";
+    document.documentElement.style.backgroundColor = "white";
+  }, []);
 
-  const [conferences, setConferences] = useState([]);   // ⭐ NEW
-  const [loading, setLoading] = useState(true);         // ⭐ NEW
+  const [conferences, setConferences] = useState([]);   
+  const [loading, setLoading] = useState(true);         
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
@@ -163,7 +167,7 @@ const ConferencesPage = () => {
               placeholder="Search conferences"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={styles.searchInput}
+              style={{ ...styles.searchInput, backgroundColor: "white" }}
             />
           <button 
             style={styles.searchButton}
@@ -391,7 +395,8 @@ const styles = {
     maxWidth: '1200px', 
     margin: '0 auto', 
     width: '100%', 
-    boxSizing: 'border-box' 
+    boxSizing: 'border-box',
+    backgroundColor: '#ffffff'
   },
 
   mainTitle: { 
@@ -454,7 +459,8 @@ const styles = {
 
   inputContainer: { 
     display: 'flex', 
-    justifyContent: 'center' 
+    justifyContent: 'center' ,
+    backgroundColor: '#ffffff', 
   },
 
   searchInputTabbed: { 
@@ -463,13 +469,14 @@ const styles = {
     border: '1px solid #a0aec0', 
     width: '100%', 
     maxWidth: '900px', 
-    backgroundColor: 'white', 
+    backgroundColor: '#ffffff', 
     fontSize: '1rem' 
   },
 
   searchButton: {
     marginLeft: '10px',
-    padding: '0.5rem 1.5rem',
+    padding: '0.5rem 1rem',
+    borderRadius: '8px',
     backgroundColor: '#3182CE',
     border: 'none',
     color: 'white',
@@ -505,12 +512,6 @@ const styles = {
 
   checkbox: { width: '18px', height: '18px' },
 
-  // filterLabelTabbed: { 
-  //   fontSize: '0.95rem', 
-  //   color: '#2D3748' 
-  // },
-
-  /* CONTENT AREA */
   contentArea: {
     backgroundColor: '#f0f0f0',
     borderRadius: '15px',
@@ -518,7 +519,6 @@ const styles = {
     padding: '20px 0'
   },
 
-  /* AIRBNB GRID — FIXED */
   cardGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
@@ -527,19 +527,6 @@ const styles = {
     padding: "20px",
     boxSizing: "border-box"
   },
-
-  /* CARD */
-  // card: {
-  //   backgroundColor: 'white',
-  //   padding: '20px',
-  //   borderRadius: '12px',
-  //   boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-  //   display: 'flex',
-  //   flexDirection: 'column',
-  //   gap: '12px',
-  //   cursor: 'pointer',
-  //   transition: 'transform 0.2s ease, box-shadow 0.2s ease'
-  // },
 
   cardHover: {
     transform: 'translateY(-6px) scale(1.02)',
@@ -595,7 +582,7 @@ cardMeta: {
   color: '#718096',
   marginTop: '6px',
   lineHeight: '1.4',
-  textAlign: 'left'   // also works
+  textAlign: 'left'   
 },
 
 
@@ -627,7 +614,6 @@ cardMeta: {
     width: 'fit-content' 
   },
 
-  /* PAGINATION */
   paginationContainer: {
     display: 'flex',
     justifyContent: 'center',
@@ -675,15 +661,13 @@ filterContainer: {
   marginBottom: "1rem"
 },
 
-/* SEARCH BAR */
 searchBar: {
   display: "flex",
   alignItems: "center",
   backgroundColor: "white",
   padding: "0.3rem 1rem",
-  border: "1.5px solid #000000",
+  border: "5px solid #e8e8e8",
   borderRadius: "10px",
-  // boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
   gap: "12px"
 },
 
@@ -709,10 +693,8 @@ filterButton: {
   fontWeight: "600"
 },
 
-/* FILTER PANEL */
 filterPanel: {
   backgroundColor: "white",
-  // padding: "1.2rem",
   borderRadius: "15px",
   boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
   display: "flex",
@@ -747,7 +729,6 @@ filterSelect: {
   backgroundColor: "white"
 },
 
-/* MODERN TOGGLE SWITCH */
 toggleWrapper: {
   position: "relative",
   width: "50px",

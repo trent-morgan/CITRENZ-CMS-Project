@@ -404,6 +404,7 @@ const styles = {
   dropdownItem: {
     padding: '10px 20px',
     cursor: 'pointer',
+    color: '#515151',
   },
 
   dropdownItemSeparator: {

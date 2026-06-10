@@ -116,12 +116,12 @@ const OrganizerPanel = () => {
                 {myConferences.find(c => c.id === paper.conferenceId)?.title}
                 </span>
                 <span style={styles.colDate}>{new Date(paper.submittedAt).toLocaleString()}</span>
-                <span style={styles.colStatus}>{paper.status}</span>
+                <span style={styles.colStatus}>{paper.status.charAt(0).toUpperCase() + paper.status.slice(1)}</span>
 
                 <div style={styles.actionButtons}>
-                <button style={styles.viewButton}>View</button>
-                <button style={styles.updateButton}>Update</button>
-                <button style={styles.deleteButton}>Delete</button>
+                <button style={styles.tableButton}>View</button>
+                <button style={styles.tableButton2}>Update</button>
+                <button style={styles.tableButton2}>Delete</button>
                 </div>
             </div>
             ))}
@@ -214,7 +214,7 @@ table: {
 
 tableHeader: {
   display: "grid",
-  gridTemplateColumns: "2fr 1fr 1fr 1fr",
+  gridTemplateColumns: "2fr 1.5fr 1fr 1fr 1.5fr",
   backgroundColor: "#F7FAFC",
   padding: "14px 20px",
   fontWeight: "700",
@@ -225,7 +225,7 @@ tableHeader: {
 
 tableRow: {
   display: "grid",
-  gridTemplateColumns: "2fr 1fr 1fr 1fr",
+  gridTemplateColumns: "2fr 1.5fr 1fr 1fr 1.5fr",
   padding: "14px 20px",
   alignItems: "center",
   borderBottom: "1px solid #EDF2F7",
@@ -239,10 +239,24 @@ tableRowHover: {
 },
 
 colTitle: { textAlign: "left" },
+colConf: { textAlign: "left" },
 colDate: { textAlign: "left" },
 colStatus: { textAlign: "left" },
 colAction: { textAlign: "left" },
-
+actionButtons: {
+  display: "flex",
+  gap: "8px"
+},
+tableButton: {
+  padding: "6px 12px",
+  backgroundColor: "#133860",
+  color: "white",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontSize: "0.85rem",
+  fontWeight: "600"
+},
 tableButton: {
   padding: "6px 12px",
   backgroundColor: "#133860",
@@ -254,6 +268,16 @@ tableButton: {
   fontWeight: "600"
 },
 
+tableButton2: {
+  padding: "6px 12px",
+  backgroundColor: "#efefef",
+  color: "black",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontSize: "0.85rem",
+  fontWeight: "600"
+},
 
 statusPending: {
     marginTop: "10px",

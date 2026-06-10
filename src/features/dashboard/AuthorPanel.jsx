@@ -175,7 +175,7 @@ const styles = {
 
 sectionTitle: {
     marginBottom: "1.5rem",
-    fontSize: "1.6rem",
+    fontSize: "1.2rem",
     fontWeight: "700",
     color: "#2D3748",
     textAlign: "left",

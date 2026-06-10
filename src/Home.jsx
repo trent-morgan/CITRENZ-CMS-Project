@@ -3,10 +3,13 @@ import heroBG from './assets/it_conference.jpg';
 import adminIcon from './assets/admin_icon.png';
 import reviewIcon from './assets/review_icon.png';
 import publishIcon from './assets/publish_icon.png';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+  const navigate = useNavigate();
+
   const conferenceDetails = {
-    title: "CITRENZ Conference 2026",
+    title: "Citrenz Conference 2026",
     subtitle: "Computing and Information Technology Research and Education New Zealand",
     deadline: "October 15, 2026",
   };
@@ -44,14 +47,14 @@ const Home = () => {
               <img src={publishIcon} alt="Authors" style={styles.cardIcon} />
               <h3>Authors</h3>
               <p>Upload manuscripts to a confernce.</p>
-              <button style={styles.primaryButton}>Submit Paper</button>
+              <button onClick={() => navigate('/author-panel')} style={styles.primaryButton}>Submit Paper</button>
             </div>
 
             <div style={styles.card}>
               <img src={reviewIcon} alt="Reviewers" style={styles.cardIcon} />
               <h3>Reviewers</h3>
               <p>Access assigned papers and complete evaluation forms.</p>
-              <button style={styles.secondaryButton}>Review Dashboard</button>
+              <button onClick={() => navigate('/reviewer-panel')} style={styles.secondaryButton}>Review Dashboard</button>
             </div>
 
             <div style={styles.card}>
@@ -131,6 +134,7 @@ const styles = {
     marginBottom: '50px',
     fontSize: '2.2rem',
     fontWeight: '700',
+    color: '#000000'
   },
   cardGrid: {
     display: 'grid',

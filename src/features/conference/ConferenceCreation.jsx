@@ -260,6 +260,8 @@ const styles = {
     border: "1px solid #cbd5e0",
     width: "100%",
     boxSizing: "border-box",
+    backgroundColor: "#ffffff",
+    color: "#2D3748",
   },
 
   messageInput: {
@@ -271,6 +273,8 @@ const styles = {
     padding: "12px",
     fontFamily: "inherit",
     resize: "vertical",
+    backgroundColor: "#ffffff",
+    color: "#2D3748",
   },
 
   required: {

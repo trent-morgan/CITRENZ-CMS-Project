@@ -56,7 +56,7 @@ const Contact = () => {
             </main>
 
             <aside style={styles.sidebar}>
-                <h2>Contact Details</h2>
+                <h2 style={styles.h2}>Contact Details</h2>
                 <div style={styles.contactDetail}>
                     <p style={styles.contactLabel}>Phone: </p>
                     <a href="" style={styles.link}>
@@ -76,7 +76,7 @@ const Contact = () => {
                     </a>
                 </div>
 
-                <h2>Postal Details</h2>
+                <h2 style={styles.h2}>Postal Details</h2>
                 <div style={styles.contactDetail}>
                     <a 
                         href="https://www.google.com/maps/search/?api=1&query=123+Example+Street+Christchurch+New+Zealand" 
@@ -141,6 +141,9 @@ const styles = {
         fontStyle: 'italic',
         color: '#3a3a3a'
     },
+    h2: {
+        color: '#2D3748',
+    },
     link: {
         color: '#2E92C4',          
         textDecoration: 'none',   
@@ -164,7 +167,6 @@ const styles = {
         color: '#4A5568',
         paddingBottom: '20px',
         paddingTop: '10px',
-
     },
     detailInput: {
         padding: '10px',
@@ -173,6 +175,7 @@ const styles = {
         width: '100%',
         boxSizing: 'border-box',
         padding: '12px',
+        backgroundColor: '#ffff',
     },
     messageInput: {
         minHeight: '150px',       
@@ -183,6 +186,7 @@ const styles = {
         padding: '12px',          
         fontFamily: 'inherit',   
         resize: 'vertical',      
+        backgroundColor: '#ffff',
     },
     separator: {
         border: '0',
